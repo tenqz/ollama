@@ -1,0 +1,21 @@
+{
+    "name": "tenqz/ollama",
+    "description": "Php library for working with Ollama server.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Tenqz\\Ollama\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Oleg Patsay",
+            "email": "smmartbiz@gmail.com"
+        }
+    ],
+    "minimum-stability": "alpha",
+    "require": {
+        "php": "^7.2"
+    }
+}
