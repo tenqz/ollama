@@ -88,7 +88,7 @@ class JsonResponseTest extends TestCase
         $body = '{"key":"value","nested":{"foo":"bar"}}';
         $response = new JsonResponse(200, [], $body);
         $expectedData = [
-            'key' => 'value',
+            'key'    => 'value',
             'nested' => ['foo' => 'bar'],
         ];
 

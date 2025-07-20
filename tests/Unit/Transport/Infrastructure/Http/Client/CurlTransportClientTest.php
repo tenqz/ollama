@@ -50,9 +50,9 @@ class CurlTransportClientTest extends TestCase
                 $this->equalTo(['param1' => 'value1', 'param2' => 'value2'])
             )
             ->willReturn([
-                'status' => 200,
+                'status'  => 200,
                 'headers' => ['Content-Type' => 'application/json'],
-                'body' => '{"success":true}',
+                'body'    => '{"success":true}',
             ]);
 
         // Act
@@ -75,7 +75,7 @@ class CurlTransportClientTest extends TestCase
 
         // Подготавливаем тестовые данные
         $requestData = [
-            'model' => 'llama2',
+            'model'  => 'llama2',
             'prompt' => 'Hello, world!',
         ];
 
@@ -89,9 +89,9 @@ class CurlTransportClientTest extends TestCase
                 $this->equalTo([])
             )
             ->willReturn([
-                'status' => 200,
+                'status'  => 200,
                 'headers' => ['Content-Type' => 'application/json'],
-                'body' => '{"response":"Hello there!"}',
+                'body'    => '{"response":"Hello there!"}',
             ]);
 
         // Act
@@ -162,9 +162,9 @@ class CurlTransportClientTest extends TestCase
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
             ->willReturn([
-                'status' => 200,
+                'status'  => 200,
                 'headers' => ['Content-Type' => 'text/plain'],
-                'body' => 'Plain text response',
+                'body'    => 'Plain text response',
             ]);
 
         // Act

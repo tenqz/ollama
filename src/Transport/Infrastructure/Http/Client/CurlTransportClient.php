@@ -206,9 +206,9 @@ class CurlTransportClient implements TransportClientInterface
         $headers = $this->parseHeaders($headerText);
 
         return [
-            'status' => $statusCode,
+            'status'  => $statusCode,
             'headers' => $headers,
-            'body' => $body,
+            'body'    => $body,
         ];
     }
 
