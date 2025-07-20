@@ -25,6 +25,9 @@
         "friendsofphp/php-cs-fixer": "^3.4"
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "check-style": "php-cs-fixer fix --dry-run --diff && phpcs",
+        "fix-style": "php-cs-fixer fix && phpcbf",
+        "analyze": "phpstan analyse"
     }
 }
