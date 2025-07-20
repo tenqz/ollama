@@ -34,13 +34,13 @@ class CurlTransportClientTest extends TestCase
      */
     public function testGetRequestConstructsCorrectUrl(): void
     {
-        // Создаем мок для CurlTransportClient, подменяя только executeCurlRequest
+        // Create a mock for CurlTransportClient, overriding only executeCurlRequest
         $clientMock = $this->getMockBuilder(CurlTransportClient::class)
             ->setConstructorArgs([$this->baseUrl])
             ->onlyMethods(['executeCurlRequest'])
             ->getMock();
 
-        // Настраиваем мок, чтобы проверить URL и параметры
+        // Configure the mock to check URL and parameters
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
             ->with(
@@ -67,19 +67,19 @@ class CurlTransportClientTest extends TestCase
      */
     public function testPostRequestSendsCorrectData(): void
     {
-        // Создаем мок для CurlTransportClient, подменяя только executeCurlRequest
+        // Create a mock for CurlTransportClient, overriding only executeCurlRequest
         $clientMock = $this->getMockBuilder(CurlTransportClient::class)
             ->setConstructorArgs([$this->baseUrl])
             ->onlyMethods(['executeCurlRequest'])
             ->getMock();
 
-        // Подготавливаем тестовые данные
+        // Prepare test data
         $requestData = [
             'model'  => 'llama2',
             'prompt' => 'Hello, world!',
         ];
 
-        // Настраиваем мок, чтобы проверить URL и параметры
+        // Configure the mock to check URL and parameters
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
             ->with(
@@ -106,13 +106,13 @@ class CurlTransportClientTest extends TestCase
      */
     public function testThrowsExceptionOnTransportError(): void
     {
-        // Создаем мок для CurlTransportClient, подменяя только executeCurlRequest
+        // Create a mock for CurlTransportClient, overriding only executeCurlRequest
         $clientMock = $this->getMockBuilder(CurlTransportClient::class)
             ->setConstructorArgs([$this->baseUrl])
             ->onlyMethods(['executeCurlRequest'])
             ->getMock();
 
-        // Настраиваем мок для имитации ошибки curl
+        // Configure the mock to simulate curl error
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
             ->willThrowException(new TransportException('Connection failed'));
@@ -133,7 +133,7 @@ class CurlTransportClientTest extends TestCase
         // Arrange: create client with trailing slash in base URL
         $clientWithTrailingSlash = new CurlTransportClient($this->baseUrl . '/');
 
-        // Используем рефлексию для доступа к защищенным методам
+        // Use reflection to access protected methods
         $reflectionClass = new \ReflectionClass(CurlTransportClient::class);
         $method = $reflectionClass->getMethod('buildUrl');
         $method->setAccessible(true);
@@ -148,17 +148,44 @@ class CurlTransportClientTest extends TestCase
     }
 
     /**
-     * Test that client handles non-JSON responses.
+     * Test that client handles non-JSON responses for body retrieval.
      */
     public function testHandlesNonJsonResponses(): void
     {
-        // Создаем мок для CurlTransportClient, подменяя только executeCurlRequest
+        // Create a mock for CurlTransportClient, overriding only executeCurlRequest
         $clientMock = $this->getMockBuilder(CurlTransportClient::class)
             ->setConstructorArgs([$this->baseUrl])
             ->onlyMethods(['executeCurlRequest'])
             ->getMock();
 
-        // Настраиваем мок для возврата не-JSON ответа
+        // Configure the mock to return non-JSON response
+        $clientMock->expects($this->once())
+            ->method('executeCurlRequest')
+            ->willReturn([
+                'status'  => 200,
+                'headers' => ['Content-Type' => 'text/plain'],
+                'body'    => 'Plain text response',
+            ]);
+
+        // Act
+        $response = $clientMock->get('/text');
+
+        // Assert - verify access to raw body content only
+        $this->assertEquals('Plain text response', $response->getBody());
+    }
+
+    /**
+     * Test that getData() throws exception for non-JSON response.
+     */
+    public function testGetDataThrowsExceptionForNonJsonResponse(): void
+    {
+        // Create a mock for CurlTransportClient, overriding only executeCurlRequest
+        $clientMock = $this->getMockBuilder(CurlTransportClient::class)
+            ->setConstructorArgs([$this->baseUrl])
+            ->onlyMethods(['executeCurlRequest'])
+            ->getMock();
+
+        // Configure the mock to return non-JSON response
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
             ->willReturn([
@@ -171,10 +198,8 @@ class CurlTransportClientTest extends TestCase
         $response = $clientMock->get('/text');
 
         // Assert
-        $this->assertEquals('Plain text response', $response->getBody());
-
-        // При вызове getData() должен быть создан массив с ключом data
-        $data = $response->getData();
-        $this->assertArrayHasKey('data', $data);
+        $this->expectException(TransportException::class);
+        $this->expectExceptionMessage('Failed to decode JSON response');
+        $response->getData(); // Should throw exception for invalid JSON
     }
 }
