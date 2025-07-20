@@ -5,8 +5,4 @@ parameters:
         - tests
     excludePaths:
         - tests/Unit
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
-    ignoreErrors:
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::[a-zA-Z0-9\\_]+#'
     tmpDir: build/phpstan 
