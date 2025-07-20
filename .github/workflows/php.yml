@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Code Quality
 
 on:
   push:
@@ -36,3 +36,11 @@ jobs:
 
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
+
+    - name: Check coding style
+      run: composer check-style
+      continue-on-error: false
+
+    - name: PHPStan Static Analysis
+      run: composer analyze
+      continue-on-error: false 
