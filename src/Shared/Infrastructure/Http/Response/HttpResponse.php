@@ -9,10 +9,12 @@ namespace Tenqz\Ollama\Shared\Infrastructure\Http\Response;
  */
 class HttpResponse
 {
-    private int $statusCode;
+    /** @var int */
+    private $statusCode;
     /** @var array<string, mixed> */
-    private array $headers;
-    private string $body;
+    private $headers;
+    /** @var string */
+    private $body;
 
     /**
      * @param int                  $statusCode HTTP status code
