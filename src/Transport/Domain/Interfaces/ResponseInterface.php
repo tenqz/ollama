@@ -47,4 +47,4 @@ interface ResponseInterface
      * @throws \Tenqz\Ollama\Transport\Domain\Exception\TransportException When response cannot be decoded
      */
     public function getData(): array;
-} 
+}

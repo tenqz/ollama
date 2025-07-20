@@ -23,14 +23,14 @@ class JsonResponseTest extends TestCase
         $statusCode = 200;
         $headers = ['Content-Type' => 'application/json'];
         $body = '{"key":"value"}';
-        
+
         // Act
         $response = new JsonResponse($statusCode, $headers, $body);
-        
+
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $response);
     }
-    
+
     /**
      * Test getStatusCode returns correct status code.
      */
@@ -39,14 +39,14 @@ class JsonResponseTest extends TestCase
         // Arrange
         $statusCode = 200;
         $response = new JsonResponse($statusCode, [], '{}');
-        
+
         // Act
         $result = $response->getStatusCode();
-        
+
         // Assert
         $this->assertEquals($statusCode, $result);
     }
-    
+
     /**
      * Test getHeaders returns correct headers.
      */
@@ -55,14 +55,14 @@ class JsonResponseTest extends TestCase
         // Arrange
         $headers = ['Content-Type' => 'application/json', 'X-Test' => 'Value'];
         $response = new JsonResponse(200, $headers, '{}');
-        
+
         // Act
         $result = $response->getHeaders();
-        
+
         // Assert
         $this->assertEquals($headers, $result);
     }
-    
+
     /**
      * Test getBody returns raw body content.
      */
@@ -71,14 +71,14 @@ class JsonResponseTest extends TestCase
         // Arrange
         $body = '{"key":"value","nested":{"foo":"bar"}}';
         $response = new JsonResponse(200, [], $body);
-        
+
         // Act
         $result = $response->getBody();
-        
+
         // Assert
         $this->assertEquals($body, $result);
     }
-    
+
     /**
      * Test getData returns decoded JSON data.
      */
@@ -89,16 +89,16 @@ class JsonResponseTest extends TestCase
         $response = new JsonResponse(200, [], $body);
         $expectedData = [
             'key' => 'value',
-            'nested' => ['foo' => 'bar']
+            'nested' => ['foo' => 'bar'],
         ];
-        
+
         // Act
         $result = $response->getData();
-        
+
         // Assert
         $this->assertEquals($expectedData, $result);
     }
-    
+
     /**
      * Test getData throws exception for invalid JSON.
      */
@@ -107,14 +107,14 @@ class JsonResponseTest extends TestCase
         // Arrange
         $body = '{invalid json}';
         $response = new JsonResponse(200, [], $body);
-        
+
         // Act & Assert
         $this->expectException(TransportException::class);
         $this->expectExceptionMessage('Failed to decode JSON response');
-        
+
         $response->getData();
     }
-    
+
     /**
      * Test isSuccessful returns true for 2xx status codes.
      *
@@ -124,14 +124,14 @@ class JsonResponseTest extends TestCase
     {
         // Arrange
         $response = new JsonResponse($statusCode, [], '{}');
-        
+
         // Act
         $result = $response->isSuccessful();
-        
+
         // Assert
         $this->assertTrue($result);
     }
-    
+
     /**
      * Test isSuccessful returns false for non-2xx status codes.
      *
@@ -141,14 +141,14 @@ class JsonResponseTest extends TestCase
     {
         // Arrange
         $response = new JsonResponse($statusCode, [], '{}');
-        
+
         // Act
         $result = $response->isSuccessful();
-        
+
         // Assert
         $this->assertFalse($result);
     }
-    
+
     /**
      * Data provider for successful status codes.
      *
@@ -164,7 +164,7 @@ class JsonResponseTest extends TestCase
             [299], // Custom successful code
         ];
     }
-    
+
     /**
      * Data provider for non-successful status codes.
      *
@@ -183,4 +183,4 @@ class JsonResponseTest extends TestCase
             [503], // Service Unavailable
         ];
     }
-} 
+}

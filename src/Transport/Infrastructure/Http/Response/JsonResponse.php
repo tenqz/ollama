@@ -71,7 +71,7 @@ class JsonResponse implements ResponseInterface
     public function getData(): array
     {
         $data = json_decode($this->body, true);
-        
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new TransportException(
                 'Failed to decode JSON response: ' . json_last_error_msg(),
@@ -80,11 +80,11 @@ class JsonResponse implements ResponseInterface
                 $this->statusCode
             );
         }
-        
+
         if (!is_array($data)) {
             return ['data' => $data];
         }
-        
+
         return $data;
     }
-} 
+}

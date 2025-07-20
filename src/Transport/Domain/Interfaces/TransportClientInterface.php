@@ -34,4 +34,4 @@ interface TransportClientInterface
      * @throws \Tenqz\Ollama\Transport\Domain\Exception\TransportException When transport error occurs
      */
     public function post(string $endpoint, array $data = []): ResponseInterface;
-} 
+}
