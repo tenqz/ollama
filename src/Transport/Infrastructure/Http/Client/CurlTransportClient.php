@@ -27,12 +27,18 @@ class CurlTransportClient implements TransportClientInterface
      * @param string               $baseUrl        Base URL for API
      * @param array<string, string> $defaultHeaders Default headers for all requests
      * @param int                  $timeout        Request timeout in seconds
+     *
+     * @throws TransportException When curl extension is not loaded
      */
     public function __construct(
         string $baseUrl,
         array $defaultHeaders = [],
         int $timeout = 30
     ) {
+        if (!extension_loaded('curl')) {
+            throw new TransportException('cURL extension is not loaded. Please install or enable the PHP curl extension.');
+        }
+
         $this->baseUrl = rtrim($baseUrl, '/');
         $this->defaultHeaders = array_merge(
             ['Content-Type' => 'application/json', 'Accept' => 'application/json'],
