@@ -3,6 +3,15 @@
     "description": "Php library for working with Ollama server.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "ollama",
+        "php",
+        "api",
+        "client",
+        "ai",
+        "llm",
+        "large-language-models"
+    ],
     "autoload": {
         "psr-4": {
             "Tenqz\\Ollama\\": "src/"
