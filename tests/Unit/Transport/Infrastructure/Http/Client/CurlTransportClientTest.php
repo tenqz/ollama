@@ -134,13 +134,13 @@ class CurlTransportClientTest extends TestCase
         $baseUrlWithTrailingSlash = $this->baseUrl . '/';
         $endpoint = '/endpoint';
         $expectedUrl = $this->baseUrl . '/endpoint';
-        
+
         // Create mock for TransportClient to check if executeCurlRequest is called with correct URL
         $clientMock = $this->getMockBuilder(CurlTransportClient::class)
             ->setConstructorArgs([$baseUrlWithTrailingSlash])
             ->onlyMethods(['executeCurlRequest'])
             ->getMock();
-        
+
         // Expect executeCurlRequest to be called with proper URL
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
@@ -151,17 +151,17 @@ class CurlTransportClientTest extends TestCase
                 $this->anything()
             )
             ->willReturn([
-                'status' => 200,
+                'status'  => 200,
                 'headers' => ['Content-Type' => 'application/json'],
-                'body' => '{"success":true}',
+                'body'    => '{"success":true}',
             ]);
-        
+
         // Act
         $clientMock->get($endpoint);
-        
+
         // Assert is handled by the mock expectations
     }
-    
+
     /**
      * Test that client normalizes URLs without leading slash.
      */
@@ -171,13 +171,13 @@ class CurlTransportClientTest extends TestCase
         $baseUrlWithTrailingSlash = $this->baseUrl . '/';
         $endpoint = 'endpoint'; // No leading slash
         $expectedUrl = $this->baseUrl . '/endpoint';
-        
+
         // Create mock for TransportClient to check if executeCurlRequest is called with correct URL
         $clientMock = $this->getMockBuilder(CurlTransportClient::class)
             ->setConstructorArgs([$baseUrlWithTrailingSlash])
             ->onlyMethods(['executeCurlRequest'])
             ->getMock();
-        
+
         // Expect executeCurlRequest to be called with proper URL
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
@@ -188,14 +188,14 @@ class CurlTransportClientTest extends TestCase
                 $this->anything()
             )
             ->willReturn([
-                'status' => 200,
+                'status'  => 200,
                 'headers' => ['Content-Type' => 'application/json'],
-                'body' => '{"success":true}',
+                'body'    => '{"success":true}',
             ]);
-        
+
         // Act
         $clientMock->get($endpoint);
-        
+
         // Assert is handled by the mock expectations
     }
 
