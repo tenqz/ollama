@@ -34,6 +34,8 @@ composer require tenqz/ollama
 
 ## Basic Usage
 
+### Using Transport Client Directly
+
 ```php
 use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
 
@@ -50,6 +52,42 @@ $response = $client->post('/api/generate', [
 $result = $response->getData();
 echo $result['response'];
 ```
+
+### Using Domain Objects
+
+```php
+use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
+use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
+use Tenqz\Ollama\Transport\Infrastructure\Http\Response\JsonResponse;
+
+// Initialize the transport client
+$transportClient = new CurlTransportClient('http://localhost:11434');
+
+// Create a generation request
+$request = new GenerationRequest('llama3.2');
+$request->setPrompt('What is artificial intelligence?');
+
+// Send request
+$response = $transportClient->post('/api/generate', $request->toArray());
+
+// Process response
+$data = $response->getData();
+echo $data['response'];
+```
+
+## Architecture
+
+The library follows Domain-Driven Design principles with a clear separation of concerns:
+
+### Transport Layer
+- `Tenqz\Ollama\Transport\Domain\Client\TransportClientInterface` - Interface for HTTP clients
+- `Tenqz\Ollama\Transport\Domain\Response\ResponseInterface` - Interface for API responses
+- `Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient` - cURL implementation
+
+### Generation Layer
+- `Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest` - Request DTO for text generation
+- `Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse` - Response DTO for generated text
+- `Tenqz\Ollama\Generation\Domain\Repository\GenerationRepositoryInterface` - Repository interface for generation operations
 
 ## Requirements
 
