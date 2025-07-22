@@ -53,15 +53,18 @@ $result = $response->getData();
 echo $result['response'];
 ```
 
-### Using Domain Objects
+### Using Domain Objects with Server Configuration
 
 ```php
 use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
+use Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig;
 use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
-use Tenqz\Ollama\Transport\Infrastructure\Http\Response\JsonResponse;
+
+// Configure the server connection
+$config = new OllamaServerConfig('localhost', 11434);
 
 // Initialize the transport client
-$transportClient = new CurlTransportClient('http://localhost:11434');
+$transportClient = new CurlTransportClient($config->getBaseUrl());
 
 // Create a generation request
 $request = new GenerationRequest('llama3.2');
@@ -88,6 +91,10 @@ The library follows Domain-Driven Design principles with a clear separation of c
 - `Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest` - Request DTO for text generation
 - `Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse` - Response DTO for generated text
 - `Tenqz\Ollama\Generation\Domain\Repository\GenerationRepositoryInterface` - Repository interface for generation operations
+
+### Shared Layer
+- `Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig` - Configuration for Ollama server connection
+- Contains cross-cutting concerns and components that are used by multiple domains
 
 ## Requirements
 
