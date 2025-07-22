@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tenqz\Ollama\Transport\Infrastructure\Http\Client;
 
+use Tenqz\Ollama\Transport\Domain\Client\TransportClientInterface;
 use Tenqz\Ollama\Transport\Domain\Exception\TransportException;
-use Tenqz\Ollama\Transport\Domain\Interfaces\ResponseInterface;
-use Tenqz\Ollama\Transport\Domain\Interfaces\TransportClientInterface;
+use Tenqz\Ollama\Transport\Domain\Response\ResponseInterface;
 use Tenqz\Ollama\Transport\Infrastructure\Http\Response\JsonResponse;
 
 /**

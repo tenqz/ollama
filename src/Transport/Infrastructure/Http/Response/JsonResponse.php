@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tenqz\Ollama\Transport\Infrastructure\Http\Response;
 
 use Tenqz\Ollama\Transport\Domain\Exception\TransportException;
-use Tenqz\Ollama\Transport\Domain\Interfaces\ResponseInterface;
+use Tenqz\Ollama\Transport\Domain\Response\ResponseInterface;
 
 /**
  * JSON API response implementation.

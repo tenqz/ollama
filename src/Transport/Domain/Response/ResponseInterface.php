@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tenqz\Ollama\Transport\Domain\Interfaces;
+namespace Tenqz\Ollama\Transport\Domain\Response;
 
 /**
  * Interface for API response.

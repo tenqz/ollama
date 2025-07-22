@@ -6,7 +6,7 @@ namespace Tests\Unit\Transport\Infrastructure\Http\Response;
 
 use PHPUnit\Framework\TestCase;
 use Tenqz\Ollama\Transport\Domain\Exception\TransportException;
-use Tenqz\Ollama\Transport\Domain\Interfaces\ResponseInterface;
+use Tenqz\Ollama\Transport\Domain\Response\ResponseInterface;
 use Tenqz\Ollama\Transport\Infrastructure\Http\Response\JsonResponse;
 
 /**
