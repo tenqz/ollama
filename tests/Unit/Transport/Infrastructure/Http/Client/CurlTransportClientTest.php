@@ -126,25 +126,77 @@ class CurlTransportClientTest extends TestCase
     }
 
     /**
-     * Test that client normalizes URLs properly.
+     * Test that client normalizes URLs with leading slash.
      */
-    public function testNormalizesUrlCorrectly(): void
+    public function testNormalizesUrlWithLeadingSlash(): void
     {
-        // Arrange: create client with trailing slash in base URL
-        $clientWithTrailingSlash = new CurlTransportClient($this->baseUrl . '/');
-
-        // Use reflection to access protected methods
-        $reflectionClass = new \ReflectionClass(CurlTransportClient::class);
-        $method = $reflectionClass->getMethod('buildUrl');
-        $method->setAccessible(true);
-
+        // Arrange
+        $baseUrlWithTrailingSlash = $this->baseUrl . '/';
+        $endpoint = '/endpoint';
+        $expectedUrl = $this->baseUrl . '/endpoint';
+        
+        // Create mock for TransportClient to check if executeCurlRequest is called with correct URL
+        $clientMock = $this->getMockBuilder(CurlTransportClient::class)
+            ->setConstructorArgs([$baseUrlWithTrailingSlash])
+            ->onlyMethods(['executeCurlRequest'])
+            ->getMock();
+        
+        // Expect executeCurlRequest to be called with proper URL
+        $clientMock->expects($this->once())
+            ->method('executeCurlRequest')
+            ->with(
+                $this->equalTo($expectedUrl),
+                $this->anything(),
+                $this->anything(),
+                $this->anything()
+            )
+            ->willReturn([
+                'status' => 200,
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => '{"success":true}',
+            ]);
+        
         // Act
-        $urlWithLeadingSlash = $method->invoke($clientWithTrailingSlash, '/endpoint');
-        $urlWithoutLeadingSlash = $method->invoke($clientWithTrailingSlash, 'endpoint');
-
-        // Assert
-        $this->assertEquals($this->baseUrl . '/endpoint', $urlWithLeadingSlash);
-        $this->assertEquals($this->baseUrl . '/endpoint', $urlWithoutLeadingSlash);
+        $clientMock->get($endpoint);
+        
+        // Assert is handled by the mock expectations
+    }
+    
+    /**
+     * Test that client normalizes URLs without leading slash.
+     */
+    public function testNormalizesUrlWithoutLeadingSlash(): void
+    {
+        // Arrange
+        $baseUrlWithTrailingSlash = $this->baseUrl . '/';
+        $endpoint = 'endpoint'; // No leading slash
+        $expectedUrl = $this->baseUrl . '/endpoint';
+        
+        // Create mock for TransportClient to check if executeCurlRequest is called with correct URL
+        $clientMock = $this->getMockBuilder(CurlTransportClient::class)
+            ->setConstructorArgs([$baseUrlWithTrailingSlash])
+            ->onlyMethods(['executeCurlRequest'])
+            ->getMock();
+        
+        // Expect executeCurlRequest to be called with proper URL
+        $clientMock->expects($this->once())
+            ->method('executeCurlRequest')
+            ->with(
+                $this->equalTo($expectedUrl),
+                $this->anything(),
+                $this->anything(),
+                $this->anything()
+            )
+            ->willReturn([
+                'status' => 200,
+                'headers' => ['Content-Type' => 'application/json'],
+                'body' => '{"success":true}',
+            ]);
+        
+        // Act
+        $clientMock->get($endpoint);
+        
+        // Assert is handled by the mock expectations
     }
 
     /**
