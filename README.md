@@ -78,6 +78,38 @@ $data = $response->getData();
 echo $data['response'];
 ```
 
+### Using Repository Pattern (Recommended)
+
+```php
+use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
+use Tenqz\Ollama\Generation\Infrastructure\Repository\OllamaGenerationRepository;
+use Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig;
+use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
+
+// Configure the server connection
+$config = new OllamaServerConfig('localhost', 11434);
+
+// Initialize the transport client
+$transportClient = new CurlTransportClient($config->getBaseUrl());
+
+// Create the repository
+$repository = new OllamaGenerationRepository($transportClient);
+
+// Create a generation request
+$request = new GenerationRequest('llama3.2');
+$request->setPrompt('What is artificial intelligence?');
+
+// Generate text using the repository
+$response = $repository->generate($request);
+
+// Get the generated text
+echo $response->getResponse();
+
+// Access metadata if available
+echo 'Model: ' . $response->getModel();
+echo 'Created At: ' . $response->getCreatedAt();
+```
+
 ## Architecture
 
 The library follows Domain-Driven Design principles with a clear separation of concerns:
@@ -91,9 +123,11 @@ The library follows Domain-Driven Design principles with a clear separation of c
 - `Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest` - Request DTO for text generation
 - `Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse` - Response DTO for generated text
 - `Tenqz\Ollama\Generation\Domain\Repository\GenerationRepositoryInterface` - Repository interface for generation operations
+- `Tenqz\Ollama\Generation\Infrastructure\Repository\OllamaGenerationRepository` - Implementation of generation repository
 
 ### Shared Layer
 - `Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig` - Configuration for Ollama server connection
+- `Tenqz\Ollama\Shared\Infrastructure\Api\OllamaApiEndpoints` - API endpoints constants
 - Contains cross-cutting concerns and components that are used by multiple domains
 
 ## Requirements
