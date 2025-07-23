@@ -32,53 +32,9 @@ You can install the package via composer:
 composer require tenqz/ollama
 ```
 
-## Basic Usage
+## Usage
 
-### Using Transport Client Directly
-
-```php
-use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
-
-// Initialize the client
-$client = new CurlTransportClient('http://localhost:11434');
-
-// Generate text using a model
-$response = $client->post('/api/generate', [
-    'model' => 'llama2',
-    'prompt' => 'What is artificial intelligence?'
-]);
-
-// Get the generated text
-$result = $response->getData();
-echo $result['response'];
-```
-
-### Using Domain Objects with Server Configuration
-
-```php
-use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
-use Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig;
-use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
-
-// Configure the server connection
-$config = new OllamaServerConfig('localhost', 11434);
-
-// Initialize the transport client
-$transportClient = new CurlTransportClient($config->getBaseUrl());
-
-// Create a generation request
-$request = new GenerationRequest('llama3.2');
-$request->setPrompt('What is artificial intelligence?');
-
-// Send request
-$response = $transportClient->post('/api/generate', $request->toArray());
-
-// Process response
-$data = $response->getData();
-echo $data['response'];
-```
-
-### Using Repository Pattern (Recommended)
+### Using Repository Pattern
 
 ```php
 use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
