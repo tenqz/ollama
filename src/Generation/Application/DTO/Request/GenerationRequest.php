@@ -20,6 +20,11 @@ class GenerationRequest
     private $prompt;
 
     /**
+     * @var bool Whether to stream the response
+     */
+    private $stream = false;
+
+    /**
      * @param string $model Model name to use for generation
      */
     public function __construct(string $model)
@@ -55,6 +60,25 @@ class GenerationRequest
     }
 
     /**
+     * @param bool $stream
+     * @return self
+     */
+    public function setStream(bool $stream): self
+    {
+        $this->stream = $stream;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getStream(): bool
+    {
+        return $this->stream;
+    }
+
+    /**
      * Convert request to array for API.
      *
      * @return array<string, mixed>
@@ -62,7 +86,8 @@ class GenerationRequest
     public function toArray(): array
     {
         $result = [
-            'model' => $this->model,
+            'model'  => $this->model,
+            'stream' => $this->stream,
         ];
 
         // Add prompt only if it's set
