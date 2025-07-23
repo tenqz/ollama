@@ -40,6 +40,18 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
+     * Test constructor initializes stream to false.
+     */
+    public function testConstructorSetsStreamToFalse(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertFalse($request->getStream(), 'Stream should be false by default');
+    }
+
+    /**
      * Test setPrompt returns self for fluent interface.
      */
     public function testSetPromptReturnsSelf(): void
@@ -49,6 +61,21 @@ class GenerationRequestTest extends TestCase
 
         // Act
         $result = $request->setPrompt('Why is the sky blue?');
+
+        // Assert
+        $this->assertSame($request, $result, 'Setter should return $this for fluent interface');
+    }
+
+    /**
+     * Test setStream returns self for fluent interface.
+     */
+    public function testSetStreamReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setStream(true);
 
         // Assert
         $this->assertSame($request, $result, 'Setter should return $this for fluent interface');
@@ -68,6 +95,21 @@ class GenerationRequestTest extends TestCase
 
         // Assert
         $this->assertEquals($prompt, $request->getPrompt());
+    }
+
+    /**
+     * Test setStream stores value correctly.
+     */
+    public function testSetStreamStoresValue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $request->setStream(true);
+
+        // Assert
+        $this->assertTrue($request->getStream());
     }
 
     /**
@@ -95,7 +137,8 @@ class GenerationRequestTest extends TestCase
         $request = new GenerationRequest('llama3.2');
 
         $expected = [
-            'model' => 'llama3.2',
+            'model'  => 'llama3.2',
+            'stream' => false,
         ];
 
         // Act
@@ -117,6 +160,30 @@ class GenerationRequestTest extends TestCase
         $expected = [
             'model'  => 'llama3.2',
             'prompt' => 'Why is the sky blue?',
+            'stream' => false,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test toArray with model, prompt and stream enabled.
+     */
+    public function testToArrayWithModelPromptAndStreamEnabled(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setPrompt('Why is the sky blue?');
+        $request->setStream(true);
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'prompt' => 'Why is the sky blue?',
+            'stream' => true,
         ];
 
         // Act
