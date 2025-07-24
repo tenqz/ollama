@@ -5,6 +5,10 @@
 <h1 align="center">Ollama PHP Client Library</h1>
 
 <p align="center">
+<span style="font-size: 1.2em;">Documentation for version v0.4.0</span>
+</p>
+
+<p align="center">
 <a href="https://github.com/tenqz/ollama/actions"><img src="https://github.com/tenqz/ollama/workflows/Tests/badge.svg" alt="Build Status"></a>
 <a href="https://packagist.org/packages/tenqz/ollama"><img src="https://img.shields.io/packagist/dt/tenqz/ollama" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/tenqz/ollama"><img src="https://img.shields.io/packagist/v/tenqz/ollama" alt="Latest Stable Version"></a>
@@ -34,11 +38,11 @@ composer require tenqz/ollama
 
 ## Usage
 
-### Using Repository Pattern
+### Using API Client Pattern
 
 ```php
 use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
-use Tenqz\Ollama\Generation\Infrastructure\Repository\OllamaGenerationRepository;
+use Tenqz\Ollama\Generation\Infrastructure\Client\OllamaGenerationClient;
 use Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig;
 use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
 
@@ -48,15 +52,15 @@ $config = new OllamaServerConfig('localhost', 11434);
 // Initialize the transport client
 $transportClient = new CurlTransportClient($config->getBaseUrl());
 
-// Create the repository
-$repository = new OllamaGenerationRepository($transportClient);
+// Create the API client
+$apiClient = new OllamaGenerationClient($transportClient);
 
 // Create a generation request
 $request = new GenerationRequest('llama3.2');
 $request->setPrompt('What is artificial intelligence?');
 
-// Generate text using the repository
-$response = $repository->generate($request);
+// Generate text using the API client
+$response = $apiClient->generate($request);
 
 // Get the generated text
 echo $response->getResponse();
@@ -78,8 +82,8 @@ The library follows Domain-Driven Design principles with a clear separation of c
 ### Generation Layer
 - `Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest` - Request DTO for text generation
 - `Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse` - Response DTO for generated text
-- `Tenqz\Ollama\Generation\Domain\Repository\GenerationRepositoryInterface` - Repository interface for generation operations
-- `Tenqz\Ollama\Generation\Infrastructure\Repository\OllamaGenerationRepository` - Implementation of generation repository
+- `Tenqz\Ollama\Generation\Domain\Client\GenerationClientInterface` - Client interface for generation operations
+- `Tenqz\Ollama\Generation\Infrastructure\Client\OllamaGenerationClient` - Implementation of generation client
 
 ### Shared Layer
 - `Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig` - Configuration for Ollama server connection
