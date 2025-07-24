@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Tenqz\Ollama\Generation\Domain\Repository;
+namespace Tenqz\Ollama\Generation\Domain\Client;
 
 use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
 use Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse;
 
 /**
- * Repository interface for Ollama API interactions.
+ * Client interface for Ollama API interactions.
  */
-interface GenerationRepositoryInterface
+interface GenerationClientInterface
 {
     /**
      * Performs text generation request to Ollama API.

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Generation\Infrastructure\Repository;
+namespace Tests\Unit\Generation\Infrastructure\Client;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
 use Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse;
 use Tenqz\Ollama\Generation\Domain\Exception\GenerationException;
-use Tenqz\Ollama\Generation\Infrastructure\Repository\OllamaGenerationRepository;
+use Tenqz\Ollama\Generation\Infrastructure\Client\OllamaGenerationClient;
 use Tenqz\Ollama\Shared\Infrastructure\Api\OllamaApiEndpoints;
 use Tenqz\Ollama\Transport\Domain\Client\TransportClientInterface;
 use Tenqz\Ollama\Transport\Domain\Exception\TransportException;
@@ -18,7 +18,7 @@ use Tenqz\Ollama\Transport\Domain\Response\ResponseInterface;
 /**
  * Tests for OllamaGenerationRepository.
  */
-class OllamaGenerationRepositoryTest extends TestCase
+class OllamaGenerationClientTest extends TestCase
 {
     /**
      * @var TransportClientInterface|MockObject
@@ -26,9 +26,9 @@ class OllamaGenerationRepositoryTest extends TestCase
     private $transportClient;
 
     /**
-     * @var OllamaGenerationRepository
+     * @var OllamaGenerationClient
      */
-    private $repository;
+    private $client;
 
     /**
      * @var ResponseInterface|MockObject
@@ -46,7 +46,7 @@ class OllamaGenerationRepositoryTest extends TestCase
     protected function setUp(): void
     {
         $this->transportClient = $this->createMock(TransportClientInterface::class);
-        $this->repository = new OllamaGenerationRepository($this->transportClient);
+        $this->client = new OllamaGenerationClient($this->transportClient);
 
         $this->fullResponseData = [
             'model'      => 'test-model',
@@ -79,11 +79,11 @@ class OllamaGenerationRepositoryTest extends TestCase
             ->willReturn($this->mockSuccessfulResponse);
 
         // Act
-        $this->repository->generate($request);
+        $this->client->generate($request);
     }
 
     /**
-     * Tests that repository returns GenerationResponse instance.
+     * Tests that client returns GenerationResponse instance.
      */
     public function testGenerateReturnsGenerationResponseInstance(): void
     {
@@ -95,7 +95,7 @@ class OllamaGenerationRepositoryTest extends TestCase
             ->willReturn($this->mockSuccessfulResponse);
 
         // Act
-        $result = $this->repository->generate($request);
+        $result = $this->client->generate($request);
 
         // Assert
         $this->assertInstanceOf(GenerationResponse::class, $result);
@@ -114,7 +114,7 @@ class OllamaGenerationRepositoryTest extends TestCase
             ->willReturn($this->mockSuccessfulResponse);
 
         // Act
-        $result = $this->repository->generate($request);
+        $result = $this->client->generate($request);
 
         // Assert
         $this->assertEquals('Generated response text', $result->getResponse());
@@ -133,7 +133,7 @@ class OllamaGenerationRepositoryTest extends TestCase
             ->willReturn($this->mockSuccessfulResponse);
 
         // Act
-        $result = $this->repository->generate($request);
+        $result = $this->client->generate($request);
 
         // Assert
         $this->assertEquals('test-model', $result->getModel());
@@ -152,14 +152,14 @@ class OllamaGenerationRepositoryTest extends TestCase
             ->willReturn($this->mockSuccessfulResponse);
 
         // Act
-        $result = $this->repository->generate($request);
+        $result = $this->client->generate($request);
 
         // Assert
         $this->assertEquals('2023-08-04T19:22:45.499127Z', $result->getCreatedAt());
     }
 
     /**
-     * Tests that repository throws exception on HTTP error.
+     * Tests that client throws exception on HTTP error.
      */
     public function testGenerateThrowsExceptionOnHttpError(): void
     {
@@ -180,11 +180,11 @@ class OllamaGenerationRepositoryTest extends TestCase
         $this->expectException(GenerationException::class);
 
         // Act
-        $this->repository->generate($request);
+        $this->client->generate($request);
     }
 
     /**
-     * Tests that repository throws exception with correct error message on HTTP error.
+     * Tests that client throws exception with correct error message on HTTP error.
      */
     public function testGenerateThrowsExceptionWithCorrectMessageOnHttpError(): void
     {
@@ -204,11 +204,11 @@ class OllamaGenerationRepositoryTest extends TestCase
         $this->expectExceptionMessage('Generation failed with status code 400');
 
         // Act
-        $this->repository->generate($request);
+        $this->client->generate($request);
     }
 
     /**
-     * Tests that repository throws exception on transport error.
+     * Tests that client throws exception on transport error.
      */
     public function testGenerateThrowsExceptionOnTransportError(): void
     {
@@ -224,11 +224,11 @@ class OllamaGenerationRepositoryTest extends TestCase
         $this->expectException(GenerationException::class);
 
         // Act
-        $this->repository->generate($request);
+        $this->client->generate($request);
     }
 
     /**
-     * Tests that repository throws exception with correct message on transport error.
+     * Tests that client throws exception with correct message on transport error.
      */
     public function testGenerateThrowsExceptionWithCorrectMessageOnTransportError(): void
     {
@@ -243,11 +243,11 @@ class OllamaGenerationRepositoryTest extends TestCase
         $this->expectExceptionMessage('Transport error during text generation: Connection failed');
 
         // Act
-        $this->repository->generate($request);
+        $this->client->generate($request);
     }
 
     /**
-     * Tests that repository handles minimal response data with only response field.
+     * Tests that client handles minimal response data with only response field.
      */
     public function testGenerateHandlesMinimalResponseData(): void
     {
@@ -267,7 +267,7 @@ class OllamaGenerationRepositoryTest extends TestCase
             ->willReturn($mockResponse);
 
         // Act
-        $result = $this->repository->generate($request);
+        $result = $this->client->generate($request);
 
         // Assert
         $this->assertEquals('Generated response text', $result->getResponse());
@@ -294,7 +294,7 @@ class OllamaGenerationRepositoryTest extends TestCase
             ->willReturn($mockResponse);
 
         // Act
-        $result = $this->repository->generate($request);
+        $result = $this->client->generate($request);
 
         // Assert
         $this->assertNull($result->getModel());
@@ -321,7 +321,7 @@ class OllamaGenerationRepositoryTest extends TestCase
             ->willReturn($mockResponse);
 
         // Act
-        $result = $this->repository->generate($request);
+        $result = $this->client->generate($request);
 
         // Assert
         $this->assertNull($result->getCreatedAt());

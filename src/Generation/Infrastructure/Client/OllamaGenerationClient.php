@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Tenqz\Ollama\Generation\Infrastructure\Repository;
+namespace Tenqz\Ollama\Generation\Infrastructure\Client;
 
 use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
 use Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse;
+use Tenqz\Ollama\Generation\Domain\Client\GenerationClientInterface;
 use Tenqz\Ollama\Generation\Domain\Exception\GenerationException;
-use Tenqz\Ollama\Generation\Domain\Repository\GenerationRepositoryInterface;
 use Tenqz\Ollama\Shared\Infrastructure\Api\OllamaApiEndpoints;
 use Tenqz\Ollama\Transport\Domain\Client\TransportClientInterface;
 use Tenqz\Ollama\Transport\Domain\Exception\TransportException;
 use Tenqz\Ollama\Transport\Domain\Response\ResponseInterface;
 
 /**
- * Implementation of GenerationRepositoryInterface using Ollama API.
+ * Implementation of GenerationClientInterface using Ollama API.
  */
-class OllamaGenerationRepository implements GenerationRepositoryInterface
+class OllamaGenerationClient implements GenerationClientInterface
 {
     /**
      * @var TransportClientInterface Transport client for making HTTP requests
