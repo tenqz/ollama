@@ -17,7 +17,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldCreateResponseWithResponseText(): void
+    public function testItShouldCreateResponseWithResponseText(): void
     {
         // Arrange
         $responseText = 'Generated text response';
@@ -34,7 +34,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldHaveNullModelByDefault(): void
+    public function testItShouldHaveNullModelByDefault(): void
     {
         // Arrange
         $response = new GenerationResponse('Generated text');
@@ -51,7 +51,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldHaveNullCreatedAtByDefault(): void
+    public function testItShouldHaveNullCreatedAtByDefault(): void
     {
         // Arrange
         $response = new GenerationResponse('Generated text');
@@ -68,7 +68,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldSetAndGetModel(): void
+    public function testItShouldSetAndGetModel(): void
     {
         // Arrange
         $response = new GenerationResponse('Generated text');
@@ -87,7 +87,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldReturnSelfFromSetModel(): void
+    public function testItShouldReturnSelfFromSetModel(): void
     {
         // Arrange
         $response = new GenerationResponse('Generated text');
@@ -104,7 +104,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldSetAndGetCreatedAt(): void
+    public function testItShouldSetAndGetCreatedAt(): void
     {
         // Arrange
         $response = new GenerationResponse('Generated text');
@@ -123,7 +123,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldReturnSelfFromSetCreatedAt(): void
+    public function testItShouldReturnSelfFromSetCreatedAt(): void
     {
         // Arrange
         $response = new GenerationResponse('Generated text');
@@ -140,7 +140,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldConvertToArrayWithOnlyResponse(): void
+    public function testItShouldConvertToArrayWithOnlyResponse(): void
     {
         // Arrange
         $responseText = 'Generated text response';
@@ -158,7 +158,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldIncludeModelKeyInArrayWhenSet(): void
+    public function testItShouldIncludeModelKeyInArrayWhenSet(): void
     {
         // Arrange
         $response = new GenerationResponse('Generated text');
@@ -176,7 +176,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldIncludeCorrectModelValueInArray(): void
+    public function testItShouldIncludeCorrectModelValueInArray(): void
     {
         // Arrange
         $model = 'llama3.2';
@@ -195,7 +195,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldIncludeCreatedAtKeyInArrayWhenSet(): void
+    public function testItShouldIncludeCreatedAtKeyInArrayWhenSet(): void
     {
         // Arrange
         $response = new GenerationResponse('Generated text');
@@ -213,7 +213,7 @@ class GenerationResponseTest extends TestCase
      *
      * @test
      */
-    public function itShouldIncludeCorrectCreatedAtValueInArray(): void
+    public function testItShouldIncludeCorrectCreatedAtValueInArray(): void
     {
         // Arrange
         $createdAt = '2023-08-04T19:22:45.499127Z';
