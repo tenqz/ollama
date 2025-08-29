@@ -39,6 +39,11 @@
         "test": "phpunit",
         "check-style": "php-cs-fixer fix --dry-run --diff && phpcs",
         "fix-style": "php-cs-fixer fix && phpcbf",
-        "analyze": "phpstan analyse"
+        "analyze": "phpstan analyse",
+        "check": [
+            "@check-style",
+            "@analyze",
+            "@test"
+        ]
     }
 }
