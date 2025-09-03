@@ -36,6 +36,15 @@ You can install the package via composer:
 composer require tenqz/ollama
 ```
 
+### Examples
+
+Runnable examples are available in the `examples/` directory for quick local testing with Ollama:
+
+- `examples/generate.php` — basic text generation with configurable host/port/timeout and optional metadata output. See `examples/README.md` for usage details and environment variables.
+
+Notes:
+- Ensure the Ollama server is running (default `http://localhost:11434`) and the selected model is available on the server.
+
 ## Usage
 
 ### Using API Client Pattern
