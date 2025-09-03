@@ -15,7 +15,8 @@ use Tenqz\Ollama\Transport\Infrastructure\Http\Response\JsonResponse;
 class JsonResponseTest extends TestCase
 {
     /**
-     * Test that JsonResponse implements ResponseInterface.
+     * Ensures JsonResponse implements ResponseInterface.
+     * Why: callers type-hint on the response interface.
      */
     public function testImplementsResponseInterface(): void
     {
@@ -32,7 +33,8 @@ class JsonResponseTest extends TestCase
     }
 
     /**
-     * Test getStatusCode returns correct status code.
+     * Ensures getStatusCode returns provided value.
+     * Why: status checks depend on this accessor.
      */
     public function testGetStatusCodeReturnsCorrectValue(): void
     {
@@ -48,7 +50,8 @@ class JsonResponseTest extends TestCase
     }
 
     /**
-     * Test getHeaders returns correct headers.
+     * Ensures getHeaders returns provided headers.
+     * Why: clients may inspect response headers.
      */
     public function testGetHeadersReturnsCorrectValues(): void
     {
@@ -64,7 +67,8 @@ class JsonResponseTest extends TestCase
     }
 
     /**
-     * Test getBody returns raw body content.
+     * Ensures getBody returns raw content.
+     * Why: clients may need raw unparsed payloads.
      */
     public function testGetBodyReturnsRawContent(): void
     {
@@ -80,7 +84,8 @@ class JsonResponseTest extends TestCase
     }
 
     /**
-     * Test getData returns decoded JSON data.
+     * Ensures getData decodes valid JSON body.
+     * Why: typical path for JSON APIs.
      */
     public function testGetDataReturnsDecodedJsonData(): void
     {
@@ -100,7 +105,8 @@ class JsonResponseTest extends TestCase
     }
 
     /**
-     * Test getData throws exception for invalid JSON.
+     * Ensures getData throws on invalid JSON body.
+     * Why: avoid returning malformed data structures.
      */
     public function testGetDataThrowsExceptionForInvalidJson(): void
     {
@@ -108,15 +114,19 @@ class JsonResponseTest extends TestCase
         $body = '{invalid json}';
         $response = new JsonResponse(200, [], $body);
 
-        // Act & Assert
-        $this->expectException(TransportException::class);
-        $this->expectExceptionMessage('Failed to decode JSON response');
-
-        $response->getData();
+        // Act
+        try {
+            $response->getData();
+            $this->fail('Expected TransportException to be thrown');
+        } catch (TransportException $e) {
+            // Assert
+            $this->assertStringStartsWith('Failed to decode JSON response', $e->getMessage());
+        }
     }
 
     /**
-     * Test isSuccessful returns true for 2xx status codes.
+     * Ensures isSuccessful returns true for 2xx statuses.
+     * Why: conventional HTTP success range.
      *
      * @dataProvider successfulStatusCodesProvider
      */
@@ -133,7 +143,8 @@ class JsonResponseTest extends TestCase
     }
 
     /**
-     * Test isSuccessful returns false for non-2xx status codes.
+     * Ensures isSuccessful returns false for non-2xx statuses.
+     * Why: consistent failure signaling.
      *
      * @dataProvider nonSuccessfulStatusCodesProvider
      */
