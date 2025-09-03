@@ -13,7 +13,8 @@ use Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse;
 class GenerationResponseTest extends TestCase
 {
     /**
-     * Tests that the response text is correctly set during construction.
+     * Ensures constructor stores the response text.
+     * Why: response content is the primary output of generation.
      *
      * @test
      */
@@ -30,7 +31,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that model property is null by default.
+     * Ensures default model is null.
+     * Why: server may omit model in minimal responses.
      *
      * @test
      */
@@ -47,7 +49,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that createdAt property is null by default.
+     * Ensures default createdAt is null.
+     * Why: timestamp may be absent in minimal responses.
      *
      * @test
      */
@@ -64,7 +67,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that model can be set and retrieved correctly.
+     * Ensures model can be assigned and retrieved.
+     * Why: metadata is important for tracing model versions.
      *
      * @test
      */
@@ -83,7 +87,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that setModel method returns $this for method chaining.
+     * Ensures setModel returns self for method chaining.
+     * Why: fluent setup for DTOs.
      *
      * @test
      */
@@ -100,7 +105,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that createdAt can be set and retrieved correctly.
+     * Ensures createdAt can be assigned and retrieved.
+     * Why: timestamp may be needed by clients.
      *
      * @test
      */
@@ -119,7 +125,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that setCreatedAt method returns $this for method chaining.
+     * Ensures setCreatedAt returns self for method chaining.
+     * Why: fluent setup for DTOs.
      *
      * @test
      */
@@ -136,7 +143,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that toArray returns array with only response field when no other fields are set.
+     * Ensures toArray emits only response when metadata is absent.
+     * Why: avoid extra fields in minimal payloads.
      *
      * @test
      */
@@ -154,7 +162,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that toArray includes model key when model is set.
+     * Ensures toArray includes model key when set.
+     * Why: preserves model metadata in payloads.
      *
      * @test
      */
@@ -172,7 +181,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that toArray includes correct model value when model is set.
+     * Ensures toArray contains correct model value.
+     * Why: validates metadata integrity.
      *
      * @test
      */
@@ -191,7 +201,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that toArray includes created_at key when createdAt is set.
+     * Ensures toArray includes created_at key when set.
+     * Why: timestamp should be serialized when present.
      *
      * @test
      */
@@ -209,7 +220,8 @@ class GenerationResponseTest extends TestCase
     }
 
     /**
-     * Tests that toArray includes correct created_at value when createdAt is set.
+     * Ensures toArray contains correct created_at value.
+     * Why: validates timestamp integrity in payload.
      *
      * @test
      */
