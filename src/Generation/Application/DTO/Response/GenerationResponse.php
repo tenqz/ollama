@@ -293,6 +293,11 @@ class GenerationResponse
             $result['done'] = $this->done;
         }
 
+        // Place context before duration/metric fields to match API example ordering
+        if ($this->context !== null) {
+            $result['context'] = $this->context;
+        }
+
         if ($this->totalDuration !== null) {
             $result['total_duration'] = $this->totalDuration;
         }
@@ -315,10 +320,6 @@ class GenerationResponse
 
         if ($this->evalDuration !== null) {
             $result['eval_duration'] = $this->evalDuration;
-        }
-
-        if ($this->context !== null) {
-            $result['context'] = $this->context;
         }
 
         return $result;
