@@ -13,7 +13,8 @@ use Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig;
 class OllamaServerConfigTest extends TestCase
 {
     /**
-     * Tests that constructor sets default host correctly.
+     * Ensures default host is 'localhost' when not provided.
+     * Why: predictable defaults simplify configuration.
      */
     public function testConstructorSetsDefaultHost(): void
     {
@@ -25,7 +26,8 @@ class OllamaServerConfigTest extends TestCase
     }
 
     /**
-     * Tests that constructor sets default port correctly.
+     * Ensures default port is 11434 when not provided.
+     * Why: matches Ollama's default port for local server.
      */
     public function testConstructorSetsDefaultPort(): void
     {
@@ -37,7 +39,8 @@ class OllamaServerConfigTest extends TestCase
     }
 
     /**
-     * Tests that constructor sets custom host correctly.
+     * Ensures custom host passed to constructor is applied.
+     * Why: allows targeting non-default hosts.
      */
     public function testConstructorSetsCustomHost(): void
     {
@@ -52,7 +55,8 @@ class OllamaServerConfigTest extends TestCase
     }
 
     /**
-     * Tests that constructor sets custom port correctly.
+     * Ensures custom port passed to constructor is applied.
+     * Why: allows targeting non-default ports.
      */
     public function testConstructorSetsCustomPort(): void
     {
@@ -67,7 +71,8 @@ class OllamaServerConfigTest extends TestCase
     }
 
     /**
-     * Tests getHost method returns correct value.
+     * Ensures getHost returns configured host.
+     * Why: downstream consumers rely on this value.
      */
     public function testGetHostReturnsCorrectValue(): void
     {
@@ -83,7 +88,8 @@ class OllamaServerConfigTest extends TestCase
     }
 
     /**
-     * Tests getPort method returns correct value.
+     * Ensures getPort returns configured port.
+     * Why: downstream consumers rely on this value.
      */
     public function testGetPortReturnsCorrectValue(): void
     {
@@ -99,7 +105,8 @@ class OllamaServerConfigTest extends TestCase
     }
 
     /**
-     * Tests getBaseUrl method returns correctly formatted URL.
+     * Ensures getBaseUrl formats URL as http://host:port.
+     * Why: used to construct transport base URL.
      */
     public function testGetBaseUrlReturnsFormattedUrl(): void
     {
@@ -117,7 +124,8 @@ class OllamaServerConfigTest extends TestCase
     }
 
     /**
-     * Tests getBaseUrl with default values.
+     * Ensures getBaseUrl uses defaults when none provided.
+     * Why: predictable base URL without explicit config.
      */
     public function testGetBaseUrlWithDefaultValues(): void
     {
