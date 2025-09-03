@@ -55,6 +55,19 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
+     * Ensures think is null by default (omitted when not set).
+     * Why: think is optional and should be omitted by default.
+     */
+    public function testConstructorSetsThinkToNullByDefault(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertNull($request->getThink(), 'Think should be null by default');
+    }
+
+    /**
      * Ensures setPrompt returns self for fluent chaining.
      * Why: allows concise request configuration.
      */
@@ -81,6 +94,22 @@ class GenerationRequestTest extends TestCase
 
         // Act
         $result = $request->setStream(true);
+
+        // Assert
+        $this->assertSame($request, $result, 'Setter should return $this for fluent interface');
+    }
+
+    /**
+     * Ensures setThink returns self for fluent chaining.
+     * Why: allows concise request configuration.
+     */
+    public function testSetThinkReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setThink(true);
 
         // Assert
         $this->assertSame($request, $result, 'Setter should return $this for fluent interface');
@@ -117,6 +146,39 @@ class GenerationRequestTest extends TestCase
 
         // Assert
         $this->assertTrue($request->getStream());
+    }
+
+    /**
+     * Ensures setThink persists provided boolean value.
+     * Why: think flag should be stored if provided.
+     */
+    public function testSetThinkStoresValue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $request->setThink(true);
+
+        // Assert
+        $this->assertTrue($request->getThink());
+    }
+
+    /**
+     * Ensures think can be reset to null.
+     * Why: optional parameter should be nullable.
+     */
+    public function testSetThinkToNull(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setThink(true);
+
+        // Act
+        $request->setThink(null);
+
+        // Assert
+        $this->assertNull($request->getThink(), 'Think should be nullable');
     }
 
     /**
@@ -195,6 +257,50 @@ class GenerationRequestTest extends TestCase
             'model'  => 'llama3.2',
             'prompt' => 'Why is the sky blue?',
             'stream' => true,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures toArray includes think when set to true.
+     */
+    public function testToArrayIncludesThinkWhenTrue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setThink(true);
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+            'think'  => true,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures toArray includes think when set to false.
+     */
+    public function testToArrayIncludesThinkWhenFalse(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setThink(false);
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+            'think'  => false,
         ];
 
         // Act
