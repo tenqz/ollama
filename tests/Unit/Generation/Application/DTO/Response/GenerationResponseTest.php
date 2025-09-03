@@ -12,6 +12,25 @@ use Tenqz\Ollama\Generation\Application\DTO\Response\GenerationResponse;
  */
 class GenerationResponseTest extends TestCase
 {
+    /** @var GenerationResponse */
+    private $response;
+
+    /**
+     * Prepare fresh DTO per test to avoid state leakage.
+     */
+    protected function setUp(): void
+    {
+        $this->response = new GenerationResponse('The sky is blue because it is the color of the sky.');
+    }
+
+    /**
+     * Symmetric cleanup.
+     */
+    protected function tearDown(): void
+    {
+        $this->response = null;
+    }
+
     /**
      * Ensures constructor stores the response text.
      * Why: response content is the primary output of generation.
@@ -38,11 +57,8 @@ class GenerationResponseTest extends TestCase
      */
     public function testItShouldHaveNullModelByDefault(): void
     {
-        // Arrange
-        $response = new GenerationResponse('Generated text');
-
         // Act
-        $result = $response->getModel();
+        $result = $this->response->getModel();
 
         // Assert
         $this->assertNull($result);
@@ -56,11 +72,8 @@ class GenerationResponseTest extends TestCase
      */
     public function testItShouldHaveNullCreatedAtByDefault(): void
     {
-        // Arrange
-        $response = new GenerationResponse('Generated text');
-
         // Act
-        $result = $response->getCreatedAt();
+        $result = $this->response->getCreatedAt();
 
         // Assert
         $this->assertNull($result);
@@ -75,12 +88,11 @@ class GenerationResponseTest extends TestCase
     public function testItShouldSetAndGetModel(): void
     {
         // Arrange
-        $response = new GenerationResponse('Generated text');
         $model = 'llama3.2';
 
         // Act
-        $response->setModel($model);
-        $result = $response->getModel();
+        $this->response->setModel($model);
+        $result = $this->response->getModel();
 
         // Assert
         $this->assertSame($model, $result);
@@ -94,14 +106,11 @@ class GenerationResponseTest extends TestCase
      */
     public function testItShouldReturnSelfFromSetModel(): void
     {
-        // Arrange
-        $response = new GenerationResponse('Generated text');
-
         // Act
-        $result = $response->setModel('model');
+        $result = $this->response->setModel('model');
 
         // Assert
-        $this->assertSame($response, $result);
+        $this->assertSame($this->response, $result);
     }
 
     /**
@@ -113,12 +122,11 @@ class GenerationResponseTest extends TestCase
     public function testItShouldSetAndGetCreatedAt(): void
     {
         // Arrange
-        $response = new GenerationResponse('Generated text');
         $createdAt = '2023-08-04T19:22:45.499127Z';
 
         // Act
-        $response->setCreatedAt($createdAt);
-        $result = $response->getCreatedAt();
+        $this->response->setCreatedAt($createdAt);
+        $result = $this->response->getCreatedAt();
 
         // Assert
         $this->assertSame($createdAt, $result);
@@ -132,14 +140,11 @@ class GenerationResponseTest extends TestCase
      */
     public function testItShouldReturnSelfFromSetCreatedAt(): void
     {
-        // Arrange
-        $response = new GenerationResponse('Generated text');
-
         // Act
-        $result = $response->setCreatedAt('2023-08-04T19:22:45.499127Z');
+        $result = $this->response->setCreatedAt('2023-08-04T19:22:45.499127Z');
 
         // Assert
-        $this->assertSame($response, $result);
+        $this->assertSame($this->response, $result);
     }
 
     /**
@@ -170,11 +175,10 @@ class GenerationResponseTest extends TestCase
     public function testItShouldIncludeModelKeyInArrayWhenSet(): void
     {
         // Arrange
-        $response = new GenerationResponse('Generated text');
-        $response->setModel('llama3.2');
+        $this->response->setModel('llama3.2');
 
         // Act
-        $result = $response->toArray();
+        $result = $this->response->toArray();
 
         // Assert
         $this->assertArrayHasKey('model', $result);
@@ -190,11 +194,10 @@ class GenerationResponseTest extends TestCase
     {
         // Arrange
         $model = 'llama3.2';
-        $response = new GenerationResponse('Generated text');
-        $response->setModel($model);
+        $this->response->setModel($model);
 
         // Act
-        $result = $response->toArray();
+        $result = $this->response->toArray();
 
         // Assert
         $this->assertSame($model, $result['model']);
@@ -209,11 +212,10 @@ class GenerationResponseTest extends TestCase
     public function testItShouldIncludeCreatedAtKeyInArrayWhenSet(): void
     {
         // Arrange
-        $response = new GenerationResponse('Generated text');
-        $response->setCreatedAt('2023-08-04T19:22:45.499127Z');
+        $this->response->setCreatedAt('2023-08-04T19:22:45.499127Z');
 
         // Act
-        $result = $response->toArray();
+        $result = $this->response->toArray();
 
         // Assert
         $this->assertArrayHasKey('created_at', $result);
@@ -229,13 +231,197 @@ class GenerationResponseTest extends TestCase
     {
         // Arrange
         $createdAt = '2023-08-04T19:22:45.499127Z';
-        $response = new GenerationResponse('Generated text');
-        $response->setCreatedAt($createdAt);
+        $this->response->setCreatedAt($createdAt);
 
         // Act
-        $result = $response->toArray();
+        $result = $this->response->toArray();
 
         // Assert
         $this->assertSame($createdAt, $result['created_at']);
+    }
+
+    /**
+     * Ensures done can be set and retrieved.
+     * Why: non-stream mode returns final done=true.
+     *
+     * @test
+     */
+    public function testItShouldSetAndGetDone(): void
+    {
+        // Arrange
+        $this->response->setDone(true);
+
+        // Assert
+        $this->assertTrue($this->response->getDone());
+    }
+
+    /**
+     * Ensures toArray includes done when set.
+     * Why: payload must expose completion flag.
+     *
+     * @test
+     */
+    public function testItShouldSerializeDoneToArray(): void
+    {
+        // Arrange
+        $this->response->setDone(true);
+
+        // Act
+        $array = $this->response->toArray();
+
+        // Assert
+        $this->assertTrue($array['done']);
+    }
+
+    /**
+     * Ensures numeric metrics can be set and retrieved.
+     * Why: final response includes performance metrics.
+     *
+     * @test
+     */
+
+    /**
+     * Ensures each metric setter persists value retrievable via getter.
+     * Why: validate numeric metric fields individually.
+     *
+     * @dataProvider providerMetricsSetGet
+     */
+    public function testMetricSetterStoresValue(string $setter, $value, string $getter): void
+    {
+        // Act
+        $this->response->{$setter}($value);
+        $result = $this->response->{$getter}();
+        // Assert
+        $this->assertSame($value, $result);
+    }
+
+    /**
+     * Metric setters/getters mapping with sample values.
+     *
+     * @return array<int, array{0:string,1:mixed,2:string}>
+     */
+    public function providerMetricsSetGet(): array
+    {
+        return [
+            ['setTotalDuration', 10706818083, 'getTotalDuration'],
+            ['setLoadDuration', 6338219291, 'getLoadDuration'],
+            ['setPromptEvalCount', 26, 'getPromptEvalCount'],
+            ['setPromptEvalDuration', 130079000, 'getPromptEvalDuration'],
+            ['setEvalCount', 259, 'getEvalCount'],
+            ['setEvalDuration', 4232710000, 'getEvalDuration'],
+        ];
+    }
+
+    /**
+     * Ensures context tokens can be set and retrieved.
+     * Why: context enables conversational memory across requests.
+     *
+     * @test
+     */
+    public function testItShouldSetAndGetContext(): void
+    {
+        // Arrange
+        $this->response->setContext([1, 2, 3]);
+
+        // Assert
+        $this->assertSame([1, 2, 3], $this->response->getContext());
+    }
+
+    /**
+     * Ensures toArray includes metrics and context when set.
+     * Why: final response must serialize extended metadata.
+     *
+     * @test
+     */
+
+    /**
+     * Ensures single metric serializes to correct key in array.
+     * Why: validate array mapping per metric.
+     *
+     * @dataProvider providerMetricsArrayMapping
+     */
+    public function testSerializeSingleMetricToArray(string $setter, $value, string $key): void
+    {
+        // Act
+        $this->response->{$setter}($value);
+        $array = $this->response->toArray();
+        // Assert
+        $this->assertSame($value, $array[$key]);
+    }
+
+    /**
+     * Metric field to array-key mapping with sample values.
+     *
+     * @return array<int, array{0:string,1:mixed,2:string}>
+     */
+    public function providerMetricsArrayMapping(): array
+    {
+        return [
+            ['setTotalDuration', 10706818083, 'total_duration'],
+            ['setLoadDuration', 6338219291, 'load_duration'],
+            ['setPromptEvalCount', 26, 'prompt_eval_count'],
+            ['setPromptEvalDuration', 130079000, 'prompt_eval_duration'],
+            ['setEvalCount', 259, 'eval_count'],
+            ['setEvalDuration', 4232710000, 'eval_duration'],
+        ];
+    }
+
+    /**
+     * Ensures context serializes to array when set.
+     * Why: enables conversational memory handoff.
+     *
+     * @test
+     */
+    public function testSerializeContextToArray(): void
+    {
+        // Arrange
+        $this->response->setContext([1, 2, 3]);
+        // Act
+        $array = $this->response->toArray();
+        // Assert
+        $this->assertSame([1, 2, 3], $array['context']);
+    }
+
+    /**
+     * Ensures complete non-stream response serializes exactly as the API example.
+     * Why: end-to-end payload mapping using one assertion.
+     *
+     * @test
+     */
+    public function testItShouldSerializeCompleteNonStreamPayload(): void
+    {
+        // Arrange
+        $this->response = new GenerationResponse('The sky is blue because it is the color of the sky.');
+        $this->response
+            ->setModel('llama3.2')
+            ->setCreatedAt('2023-08-04T19:22:45.499127Z')
+            ->setDone(true)
+            ->setContext([1, 2, 3])
+            ->setTotalDuration(5043500667)
+            ->setLoadDuration(5025959)
+            ->setPromptEvalCount(26)
+            ->setPromptEvalDuration(325953000)
+            ->setEvalCount(290)
+            ->setEvalDuration(4709213000);
+
+        $expected = [
+            'response'             => 'The sky is blue because it is the color of the sky.',
+            'model'                => 'llama3.2',
+            'created_at'           => '2023-08-04T19:22:45.499127Z',
+            'done'                 => true,
+            'context'              => [1, 2, 3],
+            'total_duration'       => 5043500667,
+            'load_duration'        => 5025959,
+            'prompt_eval_count'    => 26,
+            'prompt_eval_duration' => 325953000,
+            'eval_count'           => 290,
+            'eval_duration'        => 4709213000,
+        ];
+
+        // Act
+        $array = $this->response->toArray();
+
+        // Assert
+        $this->assertSame($expected, $array);
     }
 }
