@@ -30,7 +30,8 @@ class CurlTransportClientTest extends TestCase
     }
 
     /**
-     * Test that client correctly constructs URLs for GET requests.
+     * Ensures GET requests build correct URL and pass query params to transport.
+     * Why: prevents wrong endpoints and missing params in real calls.
      */
     public function testGetRequestConstructsCorrectUrl(): void
     {
@@ -63,7 +64,8 @@ class CurlTransportClientTest extends TestCase
     }
 
     /**
-     * Test that client correctly constructs POST requests.
+     * Ensures POST requests send payload to the expected endpoint.
+     * Why: validates request body wiring to transport layer.
      */
     public function testPostRequestSendsCorrectData(): void
     {
@@ -102,31 +104,34 @@ class CurlTransportClientTest extends TestCase
     }
 
     /**
-     * Test that client handles transport errors.
+     * Ensures transport exceptions propagate to caller with original message.
+     * Why: callers must handle network failures deterministically.
      */
     public function testThrowsExceptionOnTransportError(): void
     {
-        // Create a mock for CurlTransportClient, overriding only executeCurlRequest
+        // Arrange
         $clientMock = $this->getMockBuilder(CurlTransportClient::class)
             ->setConstructorArgs([$this->baseUrl])
             ->onlyMethods(['executeCurlRequest'])
             ->getMock();
 
-        // Configure the mock to simulate curl error
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
             ->willThrowException(new TransportException('Connection failed'));
 
-        // Assert
-        $this->expectException(TransportException::class);
-        $this->expectExceptionMessage('Connection failed');
-
         // Act
-        $clientMock->get('/models');
+        try {
+            $clientMock->get('/models');
+            $this->fail('Expected TransportException to be thrown');
+        } catch (TransportException $e) {
+            // Assert
+            $this->assertSame('Connection failed', $e->getMessage());
+        }
     }
 
     /**
-     * Test that client normalizes URLs with leading slash.
+     * Ensures buildUrl handles endpoints with leading slash.
+     * Why: avoids double slashes or missing path segments.
      */
     public function testNormalizesUrlWithLeadingSlash(): void
     {
@@ -163,7 +168,8 @@ class CurlTransportClientTest extends TestCase
     }
 
     /**
-     * Test that client normalizes URLs without leading slash.
+     * Ensures buildUrl handles endpoints without leading slash.
+     * Why: consistent URL building regardless of input format.
      */
     public function testNormalizesUrlWithoutLeadingSlash(): void
     {
@@ -200,7 +206,8 @@ class CurlTransportClientTest extends TestCase
     }
 
     /**
-     * Test that client handles non-JSON responses for body retrieval.
+     * Ensures non-JSON responses are still accessible via getBody().
+     * Why: some endpoints may return plain text; body must be readable.
      */
     public function testHandlesNonJsonResponses(): void
     {
@@ -227,17 +234,17 @@ class CurlTransportClientTest extends TestCase
     }
 
     /**
-     * Test that getData() throws exception for non-JSON response.
+     * Ensures getData() throws on non-JSON content.
+     * Why: prevents silent decoding errors and enforces response contract.
      */
     public function testGetDataThrowsExceptionForNonJsonResponse(): void
     {
-        // Create a mock for CurlTransportClient, overriding only executeCurlRequest
+        // Arrange
         $clientMock = $this->getMockBuilder(CurlTransportClient::class)
             ->setConstructorArgs([$this->baseUrl])
             ->onlyMethods(['executeCurlRequest'])
             ->getMock();
 
-        // Configure the mock to return non-JSON response
         $clientMock->expects($this->once())
             ->method('executeCurlRequest')
             ->willReturn([
@@ -249,9 +256,114 @@ class CurlTransportClientTest extends TestCase
         // Act
         $response = $clientMock->get('/text');
 
+        try {
+            $response->getData();
+            $this->fail('Expected TransportException to be thrown');
+        } catch (TransportException $e) {
+            // Assert
+            $this->assertStringStartsWith('Failed to decode JSON response', $e->getMessage());
+        }
+    }
+
+    /**
+     * Ensures default total timeout is 120 seconds.
+     * Why: generation may take long; sane default avoids premature timeouts.
+     */
+    public function testDefaultTimeoutIs120(): void
+    {
+        // Arrange
+        $client = new CurlTransportClient($this->baseUrl);
+        $ref = new \ReflectionClass($client);
+        $timeoutProp = $ref->getProperty('timeout');
+        $timeoutProp->setAccessible(true);
+
+        // Act
+        $value = $timeoutProp->getValue($client);
+
         // Assert
-        $this->expectException(TransportException::class);
-        $this->expectExceptionMessage('Failed to decode JSON response');
-        $response->getData(); // Should throw exception for invalid JSON
+        $this->assertSame(120, $value);
+    }
+
+    /**
+     * Ensures default connect timeout is 10 seconds.
+     * Why: fail fast on unreachable hosts while allowing long processing.
+     */
+    public function testDefaultConnectTimeoutIs10(): void
+    {
+        // Arrange
+        $client = new CurlTransportClient($this->baseUrl);
+        $ref = new \ReflectionClass($client);
+        $connectTimeoutProp = $ref->getProperty('connectTimeout');
+        $connectTimeoutProp->setAccessible(true);
+
+        // Act
+        $value = $connectTimeoutProp->getValue($client);
+
+        // Assert
+        $this->assertSame(10, $value);
+    }
+
+    /**
+     * Ensures custom total timeout via constructor is respected.
+     * Why: callers may need longer/shorter overall timeouts.
+     */
+    public function testCustomTimeoutIsApplied(): void
+    {
+        // Arrange
+        $client = new CurlTransportClient($this->baseUrl, [], 5, 1);
+        $ref = new \ReflectionClass($client);
+        $timeoutProp = $ref->getProperty('timeout');
+        $timeoutProp->setAccessible(true);
+
+        // Act
+        $value = $timeoutProp->getValue($client);
+
+        // Assert
+        $this->assertSame(5, $value);
+    }
+
+    /**
+     * Ensures custom connect timeout via constructor is respected.
+     * Why: callers can tune connection establishment separately.
+     */
+    public function testCustomConnectTimeoutIsApplied(): void
+    {
+        // Arrange
+        $client = new CurlTransportClient($this->baseUrl, [], 5, 1);
+        $ref = new \ReflectionClass($client);
+        $connectTimeoutProp = $ref->getProperty('connectTimeout');
+        $connectTimeoutProp->setAccessible(true);
+
+        // Act
+        $value = $connectTimeoutProp->getValue($client);
+
+        // Assert
+        $this->assertSame(1, $value);
+    }
+
+    /**
+     * Ensures cURL timeout error is propagated as TransportException with message.
+     * Why: callers must distinguish timeout from other failures.
+     */
+    public function testPostPropagatesTimeoutException(): void
+    {
+        // Arrange
+        $clientMock = $this->getMockBuilder(CurlTransportClient::class)
+            ->setConstructorArgs([$this->baseUrl])
+            ->onlyMethods(['executeCurlRequest'])
+            ->getMock();
+
+        $clientMock->expects($this->once())
+            ->method('executeCurlRequest')
+            ->willThrowException(new TransportException('cURL error: Operation timed out', 28));
+
+        // Act
+        try {
+            $clientMock->post('/timeout', []);
+            $this->fail('Expected TransportException to be thrown');
+        } catch (TransportException $e) {
+            // Assert
+            $this->assertSame('cURL error: Operation timed out', $e->getMessage());
+        }
     }
 }
