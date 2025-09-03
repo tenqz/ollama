@@ -5,7 +5,7 @@
 <h1 align="center">Ollama PHP Client Library</h1>
 
 <p align="center">
-<span style="font-size: 1.2em;">Documentation for version v0.4.0</span>
+<span style="font-size: 1.2em;">Documentation for version v0.4.2</span>
 </p>
 
 <p align="center">
