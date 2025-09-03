@@ -60,7 +60,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that repository correctly makes POST request with expected parameters.
+     * Ensures client issues POST with expected payload to generation endpoint.
+     * Why: validates contract between application layer and transport.
      */
     public function testGenerateMakesCorrectRequest(): void
     {
@@ -83,7 +84,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that client returns GenerationResponse instance.
+     * Ensures client returns a GenerationResponse object.
+     * Why: enforces type contract of client API.
      */
     public function testGenerateReturnsGenerationResponseInstance(): void
     {
@@ -102,7 +104,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that response text is correctly set in GenerationResponse.
+     * Ensures response text is propagated from API data.
+     * Why: response content must be available to callers.
      */
     public function testGenerateReturnsCorrectResponseText(): void
     {
@@ -121,7 +124,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that model is correctly set in GenerationResponse.
+     * Ensures model metadata is propagated from API data.
+     * Why: callers may depend on model identifier.
      */
     public function testGenerateReturnsCorrectModel(): void
     {
@@ -140,7 +144,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that created_at is correctly set in GenerationResponse.
+     * Ensures created_at timestamp is propagated from API data.
+     * Why: callers may rely on generation timestamp.
      */
     public function testGenerateReturnsCorrectCreatedAt(): void
     {
@@ -159,7 +164,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that client throws exception on HTTP error.
+     * Ensures HTTP error responses raise GenerationException.
+     * Why: callers must handle non-2xx statuses explicitly.
      */
     public function testGenerateThrowsExceptionOnHttpError(): void
     {
@@ -184,7 +190,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that client throws exception with correct error message on HTTP error.
+     * Ensures HTTP error message is informative for troubleshooting.
+     * Why: better DX for error handling.
      */
     public function testGenerateThrowsExceptionWithCorrectMessageOnHttpError(): void
     {
@@ -208,7 +215,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that client throws exception on transport error.
+     * Ensures transport errors raise GenerationException.
+     * Why: unify error surface for application layer.
      */
     public function testGenerateThrowsExceptionOnTransportError(): void
     {
@@ -228,7 +236,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that client throws exception with correct message on transport error.
+     * Ensures transport error message is preserved in GenerationException.
+     * Why: aid debugging of network issues.
      */
     public function testGenerateThrowsExceptionWithCorrectMessageOnTransportError(): void
     {
@@ -247,7 +256,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that client handles minimal response data with only response field.
+     * Ensures minimal API response (only response) is handled.
+     * Why: metadata may be omitted by server.
      */
     public function testGenerateHandlesMinimalResponseData(): void
     {
@@ -274,7 +284,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that model is null when not present in response data.
+     * Ensures model is null when absent in API response.
+     * Why: DTO should reflect missing metadata correctly.
      */
     public function testGenerateHandlesResponseWithoutModel(): void
     {
@@ -301,7 +312,8 @@ class OllamaGenerationClientTest extends TestCase
     }
 
     /**
-     * Tests that created_at is null when not present in response data.
+     * Ensures created_at is null when absent in API response.
+     * Why: DTO should reflect missing metadata correctly.
      */
     public function testGenerateHandlesResponseWithoutCreatedAt(): void
     {
