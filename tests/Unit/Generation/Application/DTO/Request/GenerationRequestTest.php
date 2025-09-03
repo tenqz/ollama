@@ -13,7 +13,8 @@ use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
 class GenerationRequestTest extends TestCase
 {
     /**
-     * Test constructor sets model name correctly.
+     * Ensures constructor assigns provided model name.
+     * Why: request must target an explicit model.
      */
     public function testConstructorSetsModelName(): void
     {
@@ -28,7 +29,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test constructor initializes prompt to null.
+     * Ensures constructor initializes prompt as null.
+     * Why: prompt is optional and should be omitted when absent.
      */
     public function testConstructorSetsPromptToNull(): void
     {
@@ -40,7 +42,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test constructor initializes stream to false.
+     * Ensures constructor initializes stream to false.
+     * Why: default behavior is non-streaming.
      */
     public function testConstructorSetsStreamToFalse(): void
     {
@@ -52,7 +55,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test setPrompt returns self for fluent interface.
+     * Ensures setPrompt returns self for fluent chaining.
+     * Why: allows concise request configuration.
      */
     public function testSetPromptReturnsSelf(): void
     {
@@ -67,7 +71,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test setStream returns self for fluent interface.
+     * Ensures setStream returns self for fluent chaining.
+     * Why: allows concise request configuration.
      */
     public function testSetStreamReturnsSelf(): void
     {
@@ -82,7 +87,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test setPrompt stores value correctly.
+     * Ensures setPrompt persists provided value.
+     * Why: prompt is core input for generation.
      */
     public function testSetPromptStoresValue(): void
     {
@@ -98,7 +104,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test setStream stores value correctly.
+     * Ensures setStream persists provided boolean value.
+     * Why: streaming flag affects transport behavior.
      */
     public function testSetStreamStoresValue(): void
     {
@@ -113,7 +120,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test setting prompt to null.
+     * Ensures prompt can be reset to null.
+     * Why: prompt is optional and removable.
      */
     public function testSetPromptToNull(): void
     {
@@ -129,7 +137,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test toArray with model only.
+     * Ensures toArray emits only required fields when no prompt.
+     * Why: avoid sending unnecessary keys.
      */
     public function testToArrayWithModelOnly(): void
     {
@@ -149,7 +158,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test toArray with model and prompt.
+     * Ensures toArray includes prompt when set.
+     * Why: API expects prompt key only when present.
      */
     public function testToArrayWithModelAndPrompt(): void
     {
@@ -171,7 +181,8 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
-     * Test toArray with model, prompt and stream enabled.
+     * Ensures toArray reflects stream flag and prompt together.
+     * Why: combined flags must serialize consistently.
      */
     public function testToArrayWithModelPromptAndStreamEnabled(): void
     {
