@@ -20,6 +20,11 @@ class GenerationRequest
     private $prompt;
 
     /**
+     * @var string|null The text to append after the model response
+     */
+    private $suffix;
+
+    /**
      * @var bool Whether to stream the response
      */
     private $stream = false;
@@ -28,6 +33,11 @@ class GenerationRequest
      * @var bool|null Whether the model should "think" before responding
      */
     private $think;
+
+    /**
+     * @var GenerationOptions|null Additional model parameters
+     */
+    private $options;
 
     /**
      * @param string $model Model name to use for generation
@@ -62,6 +72,25 @@ class GenerationRequest
     public function getPrompt(): ?string
     {
         return $this->prompt;
+    }
+
+    /**
+     * @param string|null $suffix
+     * @return self
+     */
+    public function setSuffix(?string $suffix): self
+    {
+        $this->suffix = $suffix;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSuffix(): ?string
+    {
+        return $this->suffix;
     }
 
     /**
@@ -103,6 +132,25 @@ class GenerationRequest
     }
 
     /**
+     * @param GenerationOptions|null $options
+     * @return self
+     */
+    public function setOptions(?GenerationOptions $options): self
+    {
+        $this->options = $options;
+
+        return $this;
+    }
+
+    /**
+     * @return GenerationOptions|null
+     */
+    public function getOptions(): ?GenerationOptions
+    {
+        return $this->options;
+    }
+
+    /**
      * Convert request to array for API.
      *
      * @return array<string, mixed>
@@ -119,9 +167,22 @@ class GenerationRequest
             $result['prompt'] = $this->prompt;
         }
 
+        // Add suffix only if it's set
+        if ($this->suffix !== null) {
+            $result['suffix'] = $this->suffix;
+        }
+
         // Add think only if it's set (null means omit)
         if ($this->think !== null) {
             $result['think'] = $this->think;
+        }
+
+        // Add options only if it's set and not empty
+        if ($this->options instanceof GenerationOptions) {
+            $optionsArray = $this->options->toArray();
+            if ($optionsArray !== []) {
+                $result['options'] = $optionsArray;
+            }
         }
 
         return $result;

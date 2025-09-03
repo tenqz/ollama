@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Generation\Application\DTO\Request;
 
 use PHPUnit\Framework\TestCase;
+use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationOptions;
 use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
 
 /**
@@ -39,6 +40,19 @@ class GenerationRequestTest extends TestCase
 
         // Assert
         $this->assertNull($request->getPrompt(), 'Prompt should be null by default');
+    }
+
+    /**
+     * Ensures constructor initializes suffix as null.
+     * Why: suffix is optional and should be omitted when absent.
+     */
+    public function testConstructorSetsSuffixToNull(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertNull($request->getSuffix(), 'Suffix should be null by default');
     }
 
     /**
@@ -78,6 +92,22 @@ class GenerationRequestTest extends TestCase
 
         // Act
         $result = $request->setPrompt('Why is the sky blue?');
+
+        // Assert
+        $this->assertSame($request, $result, 'Setter should return $this for fluent interface');
+    }
+
+    /**
+     * Ensures setSuffix returns self for fluent chaining.
+     * Why: allows concise request configuration.
+     */
+    public function testSetSuffixReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setSuffix('    return result');
 
         // Assert
         $this->assertSame($request, $result, 'Setter should return $this for fluent interface');
@@ -130,6 +160,23 @@ class GenerationRequestTest extends TestCase
 
         // Assert
         $this->assertEquals($prompt, $request->getPrompt());
+    }
+
+    /**
+     * Ensures setSuffix persists provided value.
+     * Why: suffix is part of code-completion use case.
+     */
+    public function testSetSuffixStoresValue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $suffix = '    return result';
+
+        // Act
+        $request->setSuffix($suffix);
+
+        // Assert
+        $this->assertEquals($suffix, $request->getSuffix());
     }
 
     /**
@@ -199,6 +246,23 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
+     * Ensures suffix can be reset to null.
+     * Why: suffix is optional and removable.
+     */
+    public function testSetSuffixToNull(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setSuffix('    return result');
+
+        // Act
+        $request->setSuffix(null);
+
+        // Assert
+        $this->assertNull($request->getSuffix(), 'Suffix should be nullable');
+    }
+
+    /**
      * Ensures toArray emits only required fields when no prompt.
      * Why: avoid sending unnecessary keys.
      */
@@ -232,6 +296,80 @@ class GenerationRequestTest extends TestCase
         $expected = [
             'model'  => 'llama3.2',
             'prompt' => 'Why is the sky blue?',
+            'stream' => false,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures toArray includes suffix when set.
+     */
+    public function testToArrayIncludesSuffix(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setSuffix('    return result');
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+            'suffix' => '    return result',
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures options object can be set and serialized when non-empty.
+     */
+    public function testOptionsSerializationWhenNonEmpty(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $options = (new GenerationOptions())
+            ->setSeed(42)
+            ->setTemperature(0.8)
+            ->setStop(["\n", 'user:']);
+
+        $request->setOptions($options);
+
+        $expected = [
+            'model'   => 'llama3.2',
+            'stream'  => false,
+            'options' => [
+                'seed'        => 42,
+                'temperature' => 0.8,
+                'stop'        => ["\n", 'user:'],
+            ],
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures empty options are omitted from payload.
+     */
+    public function testEmptyOptionsAreOmitted(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setOptions(new GenerationOptions());
+
+        $expected = [
+            'model'  => 'llama3.2',
             'stream' => false,
         ];
 
