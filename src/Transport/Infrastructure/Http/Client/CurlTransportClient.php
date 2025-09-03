@@ -23,17 +23,22 @@ class CurlTransportClient implements TransportClientInterface
     /** @var int */
     private $timeout;
 
+    /** @var int */
+    private $connectTimeout;
+
     /**
-     * @param string               $baseUrl        Base URL for API
-     * @param array<string, string> $defaultHeaders Default headers for all requests
-     * @param int                  $timeout        Request timeout in seconds
+     * @param string               $baseUrl         Base URL for API
+     * @param array<string, string> $defaultHeaders  Default headers for all requests
+     * @param int                  $timeout         Total request timeout in seconds
+     * @param int                  $connectTimeout  Connection timeout in seconds
      *
      * @throws TransportException When curl extension is not loaded
      */
     public function __construct(
         string $baseUrl,
         array $defaultHeaders = [],
-        int $timeout = 30
+        int $timeout = 120,
+        int $connectTimeout = 10
     ) {
         if (!extension_loaded('curl')) {
             throw new TransportException('cURL extension is not loaded. Please install or enable the PHP curl extension.');
@@ -45,6 +50,7 @@ class CurlTransportClient implements TransportClientInterface
             $defaultHeaders
         );
         $this->timeout = $timeout;
+        $this->connectTimeout = $connectTimeout;
     }
 
     /**
@@ -120,7 +126,16 @@ class CurlTransportClient implements TransportClientInterface
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $this->connectTimeout);
         curl_setopt($curl, CURLOPT_HEADER, true);
+        // Accept compressed responses if available
+        if (defined('CURLOPT_ENCODING')) {
+            curl_setopt($curl, CURLOPT_ENCODING, '');
+        }
+        // Prefer HTTP/1.1 for better compatibility
+        if (defined('CURL_HTTP_VERSION_1_1')) {
+            curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        }
 
         return $curl;
     }
