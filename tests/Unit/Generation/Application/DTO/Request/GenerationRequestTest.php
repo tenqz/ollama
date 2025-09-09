@@ -447,4 +447,26 @@ class GenerationRequestTest extends TestCase
         // Assert
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * Ensures toArray includes format when set.
+     */
+    public function testToArrayIncludesFormat(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setFormat('json');
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+            'format' => 'json',
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
 }
