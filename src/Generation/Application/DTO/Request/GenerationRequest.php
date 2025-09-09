@@ -25,6 +25,11 @@ class GenerationRequest
     private $suffix;
 
     /**
+     * @var string|null Output format (e.g. 'json')
+     */
+    private $format;
+
+    /**
      * @var bool Whether to stream the response
      */
     private $stream = false;
@@ -91,6 +96,25 @@ class GenerationRequest
     public function getSuffix(): ?string
     {
         return $this->suffix;
+    }
+
+    /**
+     * @param string|null $format
+     * @return self
+     */
+    public function setFormat(?string $format): self
+    {
+        $this->format = $format;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFormat(): ?string
+    {
+        return $this->format;
     }
 
     /**
@@ -170,6 +194,11 @@ class GenerationRequest
         // Add suffix only if it's set
         if ($this->suffix !== null) {
             $result['suffix'] = $this->suffix;
+        }
+
+        // Add format only if it's set
+        if ($this->format !== null) {
+            $result['format'] = $this->format;
         }
 
         // Add think only if it's set (null means omit)
