@@ -69,6 +69,19 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
+     * Ensures constructor initializes template as null.
+     * Why: template is optional.
+     */
+    public function testConstructorSetsTemplateToNull(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertNull($request->getTemplate(), 'Template should be null by default');
+    }
+
+    /**
      * Ensures constructor initializes stream to false.
      * Why: default behavior is non-streaming.
      */
@@ -219,6 +232,37 @@ class GenerationRequestTest extends TestCase
 
         // Act
         $result = $request->setSystem('System prompt');
+
+        // Assert
+        $this->assertSame($request, $result);
+    }
+
+    /**
+     * Ensures setTemplate persists provided value.
+     */
+    public function testSetTemplateStoresValue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $template = 'Answer: {{ response }}';
+
+        // Act
+        $request->setTemplate($template);
+
+        // Assert
+        $this->assertEquals($template, $request->getTemplate());
+    }
+
+    /**
+     * Ensures setTemplate returns self for fluent chaining.
+     */
+    public function testSetTemplateReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setTemplate('T: {{ response }}');
 
         // Assert
         $this->assertSame($request, $result);
@@ -386,6 +430,28 @@ class GenerationRequestTest extends TestCase
             'model'  => 'llama3.2',
             'stream' => false,
             'system' => 'You are a helpful assistant',
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures toArray includes template when set.
+     */
+    public function testToArrayIncludesTemplate(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setTemplate('Answer: {{ response }}');
+
+        $expected = [
+            'model'    => 'llama3.2',
+            'stream'   => false,
+            'template' => 'Answer: {{ response }}',
         ];
 
         // Act
