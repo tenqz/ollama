@@ -120,6 +120,38 @@ class OllamaGenerationClient implements GenerationClientInterface
             $generationResponse->setCreatedAt($data['created_at']);
         }
 
+        if (isset($data['done'])) {
+            $generationResponse->setDone((bool) $data['done']);
+        }
+
+        if (isset($data['context']) && is_array($data['context'])) {
+            $generationResponse->setContext($data['context']);
+        }
+
+        if (isset($data['total_duration'])) {
+            $generationResponse->setTotalDuration((int) $data['total_duration']);
+        }
+
+        if (isset($data['load_duration'])) {
+            $generationResponse->setLoadDuration((int) $data['load_duration']);
+        }
+
+        if (isset($data['prompt_eval_count'])) {
+            $generationResponse->setPromptEvalCount((int) $data['prompt_eval_count']);
+        }
+
+        if (isset($data['prompt_eval_duration'])) {
+            $generationResponse->setPromptEvalDuration((int) $data['prompt_eval_duration']);
+        }
+
+        if (isset($data['eval_count'])) {
+            $generationResponse->setEvalCount((int) $data['eval_count']);
+        }
+
+        if (isset($data['eval_duration'])) {
+            $generationResponse->setEvalDuration((int) $data['eval_duration']);
+        }
+
         return $generationResponse;
     }
 
