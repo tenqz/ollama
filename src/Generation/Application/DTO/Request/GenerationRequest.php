@@ -25,6 +25,11 @@ class GenerationRequest
     private $suffix;
 
     /**
+     * @var string|null System prompt to set role/rules for generation
+     */
+    private $system;
+
+    /**
      * @var string|null Output format (e.g. 'json')
      */
     private $format;
@@ -101,6 +106,25 @@ class GenerationRequest
     public function getSuffix(): ?string
     {
         return $this->suffix;
+    }
+
+    /**
+     * @param string|null $system
+     * @return self
+     */
+    public function setSystem(?string $system): self
+    {
+        $this->system = $system;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSystem(): ?string
+    {
+        return $this->system;
     }
 
     /**
@@ -218,6 +242,11 @@ class GenerationRequest
         // Add suffix only if it's set
         if ($this->suffix !== null) {
             $result['suffix'] = $this->suffix;
+        }
+
+        // Add system only if it's set
+        if ($this->system !== null) {
+            $result['system'] = $this->system;
         }
 
         // Add format only if it's set
