@@ -49,9 +49,17 @@ class OllamaGenerationClientTest extends TestCase
         $this->client = new OllamaGenerationClient($this->transportClient);
 
         $this->fullResponseData = [
-            'model'      => 'test-model',
-            'created_at' => '2023-08-04T19:22:45.499127Z',
-            'response'   => 'Generated response text',
+            'model'                => 'test-model',
+            'created_at'           => '2023-08-04T19:22:45.499127Z',
+            'response'             => 'Generated response text',
+            'done'                 => true,
+            'context'              => [1, 2, 3],
+            'total_duration'       => 5043500667,
+            'load_duration'        => 5025959,
+            'prompt_eval_count'    => 26,
+            'prompt_eval_duration' => 325953000,
+            'eval_count'           => 290,
+            'eval_duration'        => 4709213000,
         ];
 
         $this->mockSuccessfulResponse = $this->createMock(ResponseInterface::class);
@@ -161,6 +169,47 @@ class OllamaGenerationClientTest extends TestCase
 
         // Assert
         $this->assertEquals('2023-08-04T19:22:45.499127Z', $result->getCreatedAt());
+    }
+
+    /**
+     * Ensures each extended field is mapped correctly from API data.
+     * Why: preserve full response metadata for callers, AAA one assert per test.
+     *
+     * @dataProvider providerExtendedFieldsMapping
+     */
+    public function testGenerateMapsSingleExtendedField(string $getter, $expected): void
+    {
+        // Arrange
+        $request = new GenerationRequest('test-model');
+
+        $this->transportClient
+            ->method('post')
+            ->willReturn($this->mockSuccessfulResponse);
+
+        // Act
+        $result = $this->client->generate($request);
+
+        // Assert
+        $this->assertSame($expected, $result->{$getter}());
+    }
+
+    /**
+     * Data provider for single extended field mapping assertions.
+     *
+     * @return array<int, array{0:string,1:mixed}>
+     */
+    public function providerExtendedFieldsMapping(): array
+    {
+        return [
+            ['getDone', true],
+            ['getContext', [1, 2, 3]],
+            ['getTotalDuration', 5043500667],
+            ['getLoadDuration', 5025959],
+            ['getPromptEvalCount', 26],
+            ['getPromptEvalDuration', 325953000],
+            ['getEvalCount', 290],
+            ['getEvalDuration', 4709213000],
+        ];
     }
 
     /**
