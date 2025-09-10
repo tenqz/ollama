@@ -462,6 +462,85 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
+     * Ensures keepAlive is null by default.
+     */
+    public function testKeepAliveIsNullByDefault(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertNull($request->getKeepAlive());
+    }
+
+    /**
+     * Ensures setKeepAlive stores provided value (string).
+     */
+    public function testSetKeepAliveStoresString(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $request->setKeepAlive('5m');
+
+        // Assert
+        $this->assertSame('5m', $request->getKeepAlive());
+    }
+
+    /**
+     * Ensures setKeepAlive stores provided value (int).
+     */
+    public function testSetKeepAliveStoresInt(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $request->setKeepAlive(300);
+
+        // Assert
+        $this->assertSame(300, $request->getKeepAlive());
+    }
+
+    /**
+     * Ensures setKeepAlive returns self for fluent chaining.
+     */
+    public function testSetKeepAliveReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setKeepAlive('5m');
+
+        // Assert
+        $this->assertSame($request, $result);
+    }
+
+    /**
+     * Ensures toArray includes keep_alive when set.
+     */
+    public function testToArrayIncludesKeepAlive(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setKeepAlive('5m');
+
+        $expected = [
+            'model'      => 'llama3.2',
+            'stream'     => false,
+            'keep_alive' => '5m',
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Ensures options object can be set and serialized when non-empty.
      */
     public function testOptionsSerializationWhenNonEmpty(): void
