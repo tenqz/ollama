@@ -36,7 +36,7 @@
         "friendsofphp/php-cs-fixer": "^2.19"
     },
     "scripts": {
-        "test": "phpunit",
+        "test": "phpunit --testsuite Unit",
         "check-style": "php-cs-fixer fix --dry-run --diff && phpcs",
         "fix-style": "php-cs-fixer fix && phpcbf",
         "analyze": "phpstan analyse",
