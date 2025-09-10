@@ -604,6 +604,93 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
+     * Ensures context is null by default.
+     */
+    public function testContextIsNullByDefault(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertNull($request->getContext());
+    }
+
+    /**
+     * Ensures setContext stores provided token list.
+     */
+    public function testSetContextStoresValue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $context = [1, 2, 3];
+
+        // Act
+        $request->setContext($context);
+
+        // Assert
+        $this->assertSame($context, $request->getContext());
+    }
+
+    /**
+     * Ensures setContext returns self for fluent chaining.
+     */
+    public function testSetContextReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setContext([1, 2]);
+
+        // Assert
+        $this->assertSame($request, $result);
+    }
+
+    /**
+     * Ensures toArray includes context when provided.
+     */
+    public function testToArrayIncludesContext(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $context = [1, 2, 3];
+        $request->setContext($context);
+
+        $expected = [
+            'model'   => 'llama3.2',
+            'stream'  => false,
+            'context' => $context,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures empty context array is omitted in toArray.
+     */
+    public function testEmptyContextArrayIsOmitted(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setContext([]);
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Ensures images is null by default.
      */
     public function testImagesIsNullByDefault(): void
