@@ -541,6 +541,85 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
+     * Ensures raw is null by default.
+     */
+    public function testRawIsNullByDefault(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertNull($request->getRaw());
+    }
+
+    /**
+     * Ensures setRaw stores provided boolean true.
+     */
+    public function testSetRawStoresTrue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $request->setRaw(true);
+
+        // Assert
+        $this->assertTrue($request->getRaw());
+    }
+
+    /**
+     * Ensures setRaw stores provided boolean false.
+     */
+    public function testSetRawStoresFalse(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $request->setRaw(false);
+
+        // Assert
+        $this->assertFalse($request->getRaw());
+    }
+
+    /**
+     * Ensures setRaw returns self for fluent chaining.
+     */
+    public function testSetRawReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setRaw(true);
+
+        // Assert
+        $this->assertSame($request, $result);
+    }
+
+    /**
+     * Ensures toArray includes raw when set.
+     */
+    public function testToArrayIncludesRaw(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setRaw(true);
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+            'raw'    => true,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Ensures options object can be set and serialized when non-empty.
      */
     public function testOptionsSerializationWhenNonEmpty(): void
