@@ -56,6 +56,19 @@ class GenerationRequestTest extends TestCase
     }
 
     /**
+     * Ensures constructor initializes system as null.
+     * Why: system prompt is optional.
+     */
+    public function testConstructorSetsSystemToNull(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertNull($request->getSystem(), 'System should be null by default');
+    }
+
+    /**
      * Ensures constructor initializes stream to false.
      * Why: default behavior is non-streaming.
      */
@@ -177,6 +190,38 @@ class GenerationRequestTest extends TestCase
 
         // Assert
         $this->assertEquals($suffix, $request->getSuffix());
+    }
+
+    /**
+     * Ensures setSystem persists provided value.
+     * Why: system prompt should be stored when provided.
+     */
+    public function testSetSystemStoresValue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $system = 'You are a helpful assistant';
+
+        // Act
+        $request->setSystem($system);
+
+        // Assert
+        $this->assertEquals($system, $request->getSystem());
+    }
+
+    /**
+     * Ensures setSystem returns self for fluent chaining.
+     */
+    public function testSetSystemReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setSystem('System prompt');
+
+        // Assert
+        $this->assertSame($request, $result);
     }
 
     /**
@@ -319,6 +364,28 @@ class GenerationRequestTest extends TestCase
             'model'  => 'llama3.2',
             'stream' => false,
             'suffix' => '    return result',
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures toArray includes system when set.
+     */
+    public function testToArrayIncludesSystem(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setSystem('You are a helpful assistant');
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+            'system' => 'You are a helpful assistant',
         ];
 
         // Act
