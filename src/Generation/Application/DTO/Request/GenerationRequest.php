@@ -30,6 +30,11 @@ class GenerationRequest
     private $system;
 
     /**
+     * @var string|null Output template for formatting the model response
+     */
+    private $template;
+
+    /**
      * @var string|null Output format (e.g. 'json')
      */
     private $format;
@@ -125,6 +130,25 @@ class GenerationRequest
     public function getSystem(): ?string
     {
         return $this->system;
+    }
+
+    /**
+     * @param string|null $template
+     * @return self
+     */
+    public function setTemplate(?string $template): self
+    {
+        $this->template = $template;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTemplate(): ?string
+    {
+        return $this->template;
     }
 
     /**
@@ -247,6 +271,11 @@ class GenerationRequest
         // Add system only if it's set
         if ($this->system !== null) {
             $result['system'] = $this->system;
+        }
+
+        // Add template only if it's set
+        if ($this->template !== null) {
+            $result['template'] = $this->template;
         }
 
         // Add format only if it's set
