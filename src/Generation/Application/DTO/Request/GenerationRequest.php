@@ -65,6 +65,11 @@ class GenerationRequest
     private $context;
 
     /**
+     * @var string|int|null How long to keep the model loaded after the request (e.g., "5m")
+     */
+    private $keepAlive;
+
+    /**
      * @param string $model Model name to use for generation
      */
     public function __construct(string $model)
@@ -271,6 +276,25 @@ class GenerationRequest
     }
 
     /**
+     * @param string|int|null $keepAlive
+     * @return self
+     */
+    public function setKeepAlive($keepAlive): self
+    {
+        $this->keepAlive = $keepAlive;
+
+        return $this;
+    }
+
+    /**
+     * @return string|int|null
+     */
+    public function getKeepAlive()
+    {
+        return $this->keepAlive;
+    }
+
+    /**
      * Convert request to array for API.
      *
      * @return array<string, mixed>
@@ -320,6 +344,11 @@ class GenerationRequest
         // Add context only if set and non-empty array
         if (is_array($this->context) && $this->context !== []) {
             $result['context'] = $this->context;
+        }
+
+        // Add keep_alive only if it's set
+        if ($this->keepAlive !== null) {
+            $result['keep_alive'] = $this->keepAlive;
         }
 
         // Add options only if it's set and not empty
