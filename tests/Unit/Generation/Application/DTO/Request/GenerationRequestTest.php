@@ -469,4 +469,91 @@ class GenerationRequestTest extends TestCase
         // Assert
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * Ensures images is null by default.
+     */
+    public function testImagesIsNullByDefault(): void
+    {
+        // Arrange & Act
+        $request = new GenerationRequest('llama3.2');
+
+        // Assert
+        $this->assertNull($request->getImages());
+    }
+
+    /**
+     * Ensures setImages stores provided base64 list.
+     */
+    public function testSetImagesStoresValue(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $images = ['iVBORw0KGgoAAA', 'R0lGODlhAQABAIAAAAUEBA=='];
+
+        // Act
+        $request->setImages($images);
+
+        // Assert
+        $this->assertSame($images, $request->getImages());
+    }
+
+    /**
+     * Ensures setImages returns self for fluent chaining.
+     */
+    public function testSetImagesReturnsSelf(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+
+        // Act
+        $result = $request->setImages(['abc']);
+
+        // Assert
+        $this->assertSame($request, $result);
+    }
+
+    /**
+     * Ensures toArray includes images when provided.
+     */
+    public function testToArrayIncludesImages(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $images = ['iVBORw0KGgoAAA', 'R0lGODlhAQABAIAAAAUEBA=='];
+        $request->setImages($images);
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+            'images' => $images,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Ensures empty images array is omitted in toArray.
+     */
+    public function testEmptyImagesArrayIsOmitted(): void
+    {
+        // Arrange
+        $request = new GenerationRequest('llama3.2');
+        $request->setImages([]);
+
+        $expected = [
+            'model'  => 'llama3.2',
+            'stream' => false,
+        ];
+
+        // Act
+        $result = $request->toArray();
+
+        // Assert
+        $this->assertEquals($expected, $result);
+    }
 }
