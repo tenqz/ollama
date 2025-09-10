@@ -60,6 +60,11 @@ class GenerationRequest
     private $options;
 
     /**
+     * @var int[]|null Context tokens to continue generation
+     */
+    private $context;
+
+    /**
      * @param string $model Model name to use for generation
      */
     public function __construct(string $model)
@@ -247,6 +252,25 @@ class GenerationRequest
     }
 
     /**
+     * @param int[]|null $context
+     * @return self
+     */
+    public function setContext(?array $context): self
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    /**
+     * @return int[]|null
+     */
+    public function getContext(): ?array
+    {
+        return $this->context;
+    }
+
+    /**
      * Convert request to array for API.
      *
      * @return array<string, mixed>
@@ -291,6 +315,11 @@ class GenerationRequest
         // Add images only if set and non-empty array
         if (is_array($this->images) && $this->images !== []) {
             $result['images'] = $this->images;
+        }
+
+        // Add context only if set and non-empty array
+        if (is_array($this->context) && $this->context !== []) {
+            $result['context'] = $this->context;
         }
 
         // Add options only if it's set and not empty
