@@ -40,6 +40,11 @@ class GenerationRequest
     private $think;
 
     /**
+     * @var string[]|null Base64-encoded images for multimodal models
+     */
+    private $images;
+
+    /**
      * @var GenerationOptions|null Additional model parameters
      */
     private $options;
@@ -156,6 +161,25 @@ class GenerationRequest
     }
 
     /**
+     * @param string[]|null $images
+     * @return self
+     */
+    public function setImages(?array $images): self
+    {
+        $this->images = $images;
+
+        return $this;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function getImages(): ?array
+    {
+        return $this->images;
+    }
+
+    /**
      * @param GenerationOptions|null $options
      * @return self
      */
@@ -204,6 +228,11 @@ class GenerationRequest
         // Add think only if it's set (null means omit)
         if ($this->think !== null) {
             $result['think'] = $this->think;
+        }
+
+        // Add images only if set and non-empty array
+        if (is_array($this->images) && $this->images !== []) {
+            $result['images'] = $this->images;
         }
 
         // Add options only if it's set and not empty
