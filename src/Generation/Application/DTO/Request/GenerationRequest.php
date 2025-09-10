@@ -50,6 +50,11 @@ class GenerationRequest
     private $think;
 
     /**
+     * @var bool|null Disable model templates/post-processing and return raw tokens
+     */
+    private $raw;
+
+    /**
      * @var string[]|null Base64-encoded images for multimodal models
      */
     private $images;
@@ -219,6 +224,25 @@ class GenerationRequest
     }
 
     /**
+     * @param bool|null $raw
+     * @return self
+     */
+    public function setRaw(?bool $raw): self
+    {
+        $this->raw = $raw;
+
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getRaw(): ?bool
+    {
+        return $this->raw;
+    }
+
+    /**
      * @param string[]|null $images
      * @return self
      */
@@ -334,6 +358,11 @@ class GenerationRequest
         // Add think only if it's set (null means omit)
         if ($this->think !== null) {
             $result['think'] = $this->think;
+        }
+
+        // Add raw only if it's set (null means omit)
+        if ($this->raw !== null) {
+            $result['raw'] = $this->raw;
         }
 
         // Add images only if set and non-empty array
