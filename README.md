@@ -5,7 +5,7 @@
 <h1 align="center">Ollama PHP Client Library</h1>
 
 <p align="center">
-<span style="font-size: 1.2em;">Documentation for version v0.5.0</span>
+<span style="font-size: 1.2em;">Documentation for version v0.6.0</span>
 </p>
 
 <p align="center">
@@ -22,15 +22,15 @@ Ollama PHP Client Library is a robust, well-designed PHP client for interacting 
 ## Features
 
 - **Clean, domain-driven architecture** with clear separation of concerns
-- **Comprehensive Ollama API support** including text generation with advanced options
+- **Comprehensive Ollama API support** including text generation and embeddings
 - **Type-safe request and response handling** with full DTO support
-- **Advanced generation options** including temperature, top-k, top-p, repetition penalty, and more
+- **Text generation** with advanced options (temperature, top-k, top-p, repetition penalty, and more)
+- **Text embeddings** for semantic search, similarity, and vector operations
 - **Multimodal support** for image inputs with base64-encoded images
 - **Streaming support** for real-time text generation
 - **Flexible configuration** with customizable timeouts and connection settings
 - **PSR standards compliance** with proper interfaces and abstractions
-- **Comprehensive test coverage** with unit tests and quality assurance
-- **Easy-to-use examples** with CLI interface and environment variable support
+- **Comprehensive test coverage** with 97+ unit tests for embeddings alone
 
 ## Installation
 
@@ -40,158 +40,76 @@ You can install the package via composer:
 composer require tenqz/ollama
 ```
 
-### Examples
+## Requirements
 
-Runnable examples are available in the `examples/` directory for quick local testing with Ollama:
-
-- **`examples/generate.php`** — Comprehensive text generation example with:
-  - Configurable host/port/timeout settings
-  - CLI argument parsing with environment variable fallbacks
-  - Optional metadata output for debugging
-  - Error handling and validation
-  - Support for all generation options and features
-
-**Usage:**
-```bash
-# Basic usage
-php examples/generate.php --model=llama3.2 --prompt="What is AI?"
-
-# With advanced options
-php examples/generate.php --model=llama3.2 --prompt="Write a story" --show-meta
-
-# Using environment variables
-OLLAMA_MODEL=llama3.2 OLLAMA_PROMPT="Explain quantum computing" php examples/generate.php
-```
-
-**Available CLI options:**
-- `--model` - Model name (required)
-- `--prompt` - Text prompt (required)
-- `--host` - Ollama server host (default: localhost)
-- `--port` - Ollama server port (default: 11434)
-- `--timeout` - Request timeout in seconds (default: 120)
-- `--show-meta` - Display response metadata
-
-**Environment variables (fallbacks):**
-- `OLLAMA_MODEL`, `OLLAMA_PROMPT`, `OLLAMA_HOST`, `OLLAMA_PORT`, `OLLAMA_TIMEOUT`
-
-**Prerequisites:**
-- Running Ollama server (default `http://localhost:11434`)
-- Target model available on the server (e.g., `llama3.2`)
-- PHP 7.2+ with cURL and JSON extensions
-- Dependencies installed: `composer install`
+- **PHP 7.2 or higher** (supports PHP 8.0+ features)
+- **cURL extension** for HTTP communication
+- **JSON extension** for data serialization
+- **Ollama server** running locally or remotely
 
 ## Usage
 
-### Basic Text Generation
+### Text Generation
 
 ```php
 use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
+use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationOptions;
 use Tenqz\Ollama\Generation\Infrastructure\Client\OllamaGenerationClient;
 use Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig;
 use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
 
 // Configure the server connection
 $config = new OllamaServerConfig('localhost', 11434);
-
-// Initialize the transport client
 $transportClient = new CurlTransportClient($config->getBaseUrl());
 
-// Create the API client
-$apiClient = new OllamaGenerationClient($transportClient);
+// Create the Generation API client
+$client = new OllamaGenerationClient($transportClient);
 
-// Create a generation request
+// Create a generation request with options
 $request = new GenerationRequest('llama3.2');
-$request->setPrompt('What is artificial intelligence?');
-
-// Generate text using the API client
-$response = $apiClient->generate($request);
-
-// Get the generated text
-echo $response->getResponse();
-
-// Access metadata if available
-echo 'Model: ' . $response->getModel();
-echo 'Created At: ' . $response->getCreatedAt();
-```
-
-### Advanced Generation with Options
-
-```php
-use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationRequest;
-use Tenqz\Ollama\Generation\Application\DTO\Request\GenerationOptions;
-
-// Create a request with advanced options
-$request = new GenerationRequest('llama3.2');
-$request->setPrompt('Write a creative story about a robot');
-$request->setSystem('You are a creative writing assistant. Write engaging, original stories.');
+$request->setPrompt('Write a creative story about AI');
+$request->setSystem('You are a creative writing assistant.');
 
 // Configure generation options
 $options = new GenerationOptions();
-$options->setTemperature(0.8);           // More creative responses
-$options->setTopK(40);                  // Limit vocabulary diversity
-$options->setTopP(0.9);                 // Nucleus sampling
-$options->setNumPredict(500);           // Limit response length
-$options->setRepeatPenalty(1.1);        // Reduce repetition
-$options->setStop(['END', 'The End']);   // Stop sequences
-
+$options->setTemperature(0.8);      // More creative
+$options->setTopK(40);              // Vocabulary diversity
+$options->setNumPredict(500);       // Max tokens
 $request->setOptions($options);
 
-$response = $apiClient->generate($request);
+// Generate text
+$response = $client->generate($request);
 echo $response->getResponse();
 ```
 
-### Streaming Generation
+### Text Embeddings
 
 ```php
-// Enable streaming for real-time text generation
-$request = new GenerationRequest('llama3.2');
-$request->setPrompt('Explain quantum computing step by step');
-$request->setStream(true);
+use Tenqz\Ollama\Embedding\Application\DTO\Request\EmbeddingRequest;
+use Tenqz\Ollama\Embedding\Infrastructure\Client\OllamaEmbeddingClient;
+use Tenqz\Ollama\Shared\Infrastructure\Config\OllamaServerConfig;
+use Tenqz\Ollama\Transport\Infrastructure\Http\Client\CurlTransportClient;
 
-$response = $apiClient->generate($request);
-echo $response->getResponse(); // Streams the response as it's generated
-```
+// Configure the server connection
+$config = new OllamaServerConfig('localhost', 11434);
+$transportClient = new CurlTransportClient($config->getBaseUrl());
 
-### Multimodal Generation (Images)
+// Create the Embedding API client
+$client = new OllamaEmbeddingClient($transportClient);
 
-```php
-// For models that support images (like llava)
-$request = new GenerationRequest('llava');
-$request->setPrompt('Describe what you see in this image');
+// Create an embedding request
+$request = new EmbeddingRequest('nomic-embed-text:latest', 'Hello world');
 
-// Add base64-encoded images
-$request->setImages([
-    base64_encode(file_get_contents('path/to/image.jpg'))
-]);
+// Generate embedding vector
+$response = $client->embed($request);
 
-$response = $apiClient->generate($request);
-echo $response->getResponse();
-```
+// Access the embedding vector
+$embedding = $response->getEmbedding();        // First embedding (768-dimensional vector)
+$dimension = $response->getDimension();        // Vector dimension (e.g., 768)
 
-### JSON Format Output
-
-```php
-// Request structured JSON output
-$request = new GenerationRequest('llama3.2');
-$request->setPrompt('Generate a JSON object with user information');
-$request->setFormat('json');
-
-$response = $apiClient->generate($request);
-$jsonData = json_decode($response->getResponse(), true);
-```
-
-### Custom Templates and Context
-
-```php
-// Use custom templates and context
-$request = new GenerationRequest('llama3.2');
-$request->setPrompt('Continue this conversation');
-$request->setTemplate('{{ .Prompt }}');
-$request->setContext([1, 2, 3, 4, 5]); // Previous context tokens
-$request->setKeepAlive('5m'); // Keep model loaded for 5 minutes
-
-$response = $apiClient->generate($request);
-echo $response->getResponse();
+// Use embeddings for similarity search, clustering, etc.
+echo "Embedding dimension: {$dimension}\n";
+echo "First 5 values: " . implode(', ', array_slice($embedding, 0, 5));
 ```
 
 ## Architecture
@@ -204,60 +122,69 @@ The library follows Domain-Driven Design principles with a clear separation of c
 - **`CurlTransportClient`** - cURL implementation with configurable timeouts and headers
 - **`JsonResponse`** - JSON response implementation with data parsing
 
-### Generation Layer
-- **`GenerationRequest`** - Comprehensive request DTO with support for:
-  - Basic prompts and system messages
-  - Advanced options (temperature, top-k, top-p, etc.)
-  - Multimodal inputs (base64-encoded images)
-  - Streaming and context management
-  - Custom templates and output formats
-- **`GenerationOptions`** - Fine-grained control over model behavior:
-  - Temperature, top-k, top-p, min-p sampling
-  - Repetition penalty and context window size
-  - Stop sequences and prediction limits
-  - Seed for deterministic outputs
+### Generation Layer (Text Generation)
+- **`GenerationRequest`** - Request DTO with prompts, options, images, streaming, templates
+- **`GenerationOptions`** - Fine-grained control (temperature, top-k, top-p, repetition penalty, etc.)
 - **`GenerationResponse`** - Response DTO with generated text and metadata
 - **`GenerationClientInterface`** - Client interface for generation operations
 - **`OllamaGenerationClient`** - Implementation with error handling and response transformation
+- **`GenerationException`** - Domain-specific exception for generation errors
+
+### Embedding Layer (Text Embeddings)
+- **`EmbeddingRequest`** - Request DTO with model and input text
+- **`EmbeddingResponse`** - Response DTO with embedding vectors (supports batch processing)
+- **`EmbeddingClientInterface`** - Client interface for embedding operations
+- **`OllamaEmbeddingClient`** - Implementation with error handling and vector processing
+- **`EmbeddingException`** - Domain-specific exception for embedding errors
 
 ### Shared Layer
 - **`OllamaServerConfig`** - Server configuration with host, port, and URL building
-- **`OllamaApiEndpoints`** - API endpoint constants for maintainability
+- **`OllamaApiEndpoints`** - API endpoint constants (`/api/generate`, `/api/embed`)
 - Cross-cutting concerns and utilities used across domains
 
-## Generation Options
+## Advanced Features
 
+### Generation Options
 The library supports comprehensive generation options for fine-tuning model behavior:
 
-### Sampling Parameters
-- **`temperature`** (0.0-1.0) - Controls randomness (higher = more creative)
-- **`top_k`** (1-100) - Limits vocabulary diversity 
-- **`top_p`** (0.0-1.0) - Nucleus sampling for focused responses
-- **`min_p`** (0.0-1.0) - Minimum probability threshold
-- **`seed`** (integer) - Deterministic outputs for reproducible results
+**Sampling Parameters:**
+- `temperature` (0.0-1.0) - Controls randomness (higher = more creative)
+- `top_k` (1-100) - Limits vocabulary diversity 
+- `top_p` (0.0-1.0) - Nucleus sampling for focused responses
+- `seed` (integer) - Deterministic outputs for reproducible results
 
-### Generation Control
-- **`num_predict`** (integer) - Maximum tokens to generate (-1 = unlimited)
-- **`num_ctx`** (integer) - Context window size (default: 4096)
-- **`repeat_penalty`** (float) - Penalty for repetition (1.0 = no penalty)
-- **`repeat_last_n`** (integer) - Lookback window for repetition penalty
-- **`stop`** (array) - Stop sequences to end generation
+**Generation Control:**
+- `num_predict` (integer) - Maximum tokens to generate
+- `repeat_penalty` (float) - Penalty for repetition
+- `stop` (array) - Stop sequences to end generation
 
-### Advanced Features
-- **`stream`** (boolean) - Real-time streaming responses
-- **`format`** (string) - Output format (e.g., 'json')
-- **`template`** (string) - Custom prompt template
-- **`system`** (string) - System message for role definition
-- **`images`** (array) - Base64-encoded images for multimodal models
-- **`context`** (array) - Previous context tokens for continuation
-- **`keep_alive`** (string/int) - Model persistence duration
+**Advanced:**
+- `stream` (boolean) - Real-time streaming responses
+- `format` (string) - Output format (e.g., 'json')
+- `system` (string) - System message for role definition
+- `images` (array) - Base64-encoded images for multimodal models
+- `keep_alive` (string/int) - Model persistence duration
 
-## Requirements
+### Embedding Features
+The Embedding layer supports:
 
-- **PHP 7.2 or higher** (supports PHP 8.0+ features)
-- **cURL extension** for HTTP communication
-- **JSON extension** for data serialization
-- **Ollama server** running locally or remotely
+**Request Options:**
+- `model` (string) - Embedding model name (e.g., `nomic-embed-text:latest`)
+- `input` (string) - Text to generate embeddings for
+- `options` (array) - Additional model parameters
+- `keep_alive` (string/int) - Model persistence duration
+
+**Response Data:**
+- `embeddings` (array) - Array of embedding vectors (supports batch processing)
+- `dimension` (int) - Vector dimension (e.g., 768)
+- `model` (string) - Model name used
+- Performance metrics: `total_duration`, `load_duration`, `prompt_eval_count`
+
+**Methods:**
+- `getEmbedding()` - Get first embedding vector (single text)
+- `getEmbeddings()` - Get all embedding vectors (batch processing)
+- `getDimension()` - Get vector dimension
+- `getCount()` - Get number of embeddings
 
 ## Development
 
