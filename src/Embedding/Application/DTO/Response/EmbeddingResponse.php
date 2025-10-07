@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tenqz\Ollama\Embedding\Application\DTO\Response;
 
+use Tenqz\Ollama\Embedding\Domain\Exception\EmbeddingException;
+
 /**
  * Data Transfer Object for embedding generation response.
  */
@@ -56,12 +58,12 @@ class EmbeddingResponse
      * Get first embedding vector (for single text processing).
      *
      * @return float[]
-     * @throws \RuntimeException When no embeddings are available
+     * @throws EmbeddingException When no embeddings are available
      */
     public function getEmbedding(): array
     {
         if (empty($this->embeddings)) {
-            throw new \RuntimeException('No embeddings available in response');
+            throw new EmbeddingException('No embeddings available in response');
         }
 
         return $this->embeddings[0];
