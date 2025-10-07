@@ -15,6 +15,11 @@ final class OllamaApiEndpoints
     public const GENERATE = '/api/generate';
 
     /**
+     * Generate embeddings endpoint.
+     */
+    public const EMBED = '/api/embed';
+
+    /**
      * Private constructor to prevent instantiation.
      */
     private function __construct()
