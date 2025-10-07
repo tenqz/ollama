@@ -17,7 +17,7 @@ class EmbeddingRequest
     /**
      * @var string Text to generate embeddings for
      */
-    private $prompt;
+    private $input;
 
     /**
      * @var string|int|null How long to keep the model loaded after the request (e.g., "5m")
@@ -31,12 +31,12 @@ class EmbeddingRequest
 
     /**
      * @param string $model Model name to use for embedding generation
-     * @param string $prompt Text to generate embeddings for
+     * @param string $input Text to generate embeddings for
      */
-    public function __construct(string $model, string $prompt)
+    public function __construct(string $model, string $input)
     {
         $this->model = $model;
-        $this->prompt = $prompt;
+        $this->input = $input;
     }
 
     /**
@@ -50,9 +50,9 @@ class EmbeddingRequest
     /**
      * @return string
      */
-    public function getPrompt(): string
+    public function getInput(): string
     {
-        return $this->prompt;
+        return $this->input;
     }
 
     /**
@@ -101,8 +101,8 @@ class EmbeddingRequest
     public function toArray(): array
     {
         $result = [
-            'model'  => $this->model,
-            'prompt' => $this->prompt,
+            'model' => $this->model,
+            'input' => $this->input,
         ];
 
         // Add keep_alive only if it's set
