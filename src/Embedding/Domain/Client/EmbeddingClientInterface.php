@@ -23,4 +23,3 @@ interface EmbeddingClientInterface
      */
     public function embed(EmbeddingRequest $request): EmbeddingResponse;
 }
-
